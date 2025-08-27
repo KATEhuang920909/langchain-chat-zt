@@ -1,0 +1,11 @@
+2025-08-21 09:06:50 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m26076[0m]
+2025-08-21 09:06:50 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-08-21 09:06:50 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-08-21 09:06:50 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-08-21 09:07:21 | INFO | stdout | [32mINFO[0m:     127.0.0.1:5600 - "[1mGET / HTTP/1.1[0m" [31m404 Not Found[0m
+2025-08-21 09:07:22 | INFO | stdout | [32mINFO[0m:     127.0.0.1:5600 - "[1mGET /favicon.ico HTTP/1.1[0m" [31m404 Not Found[0m
+2025-08-21 09:09:27 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m15268[0m]
+2025-08-21 09:09:27 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-08-21 09:09:27 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-08-21 09:09:27 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-08-21 09:10:56 | INFO | stdout | [32mINFO[0m:     127.0.0.1:4248 - "[1mGET / HTTP/1.1[0m" [31m404 Not Found[0m

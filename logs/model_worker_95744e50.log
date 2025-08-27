@@ -1,0 +1,38 @@
+2024-08-22 09:00:12 | INFO | model_worker | Loading the model ['Qwen1.5-14B-Chat'] on worker 95744e50 ...
+2024-08-22 09:00:13 | ERROR | stderr | Loading checkpoint shards:   0%|                                                                                                                               | 0/8 [00:00<?, ?it/s]
+2024-08-22 09:00:13 | ERROR | stderr | Loading checkpoint shards:   0%|                                                                                                                               | 0/8 [00:00<?, ?it/s]
+2024-08-22 09:00:13 | ERROR | stderr | 
+2024-08-22 09:00:13 | ERROR | stderr | Process model_worker - Qwen1.5-14B-Chat:
+2024-08-22 09:00:13 | ERROR | stderr | Traceback (most recent call last):
+2024-08-22 09:00:13 | ERROR | stderr |   File "/home/jording/anaconda3/envs/security/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+2024-08-22 09:00:13 | ERROR | stderr |     self.run()
+2024-08-22 09:00:13 | ERROR | stderr |   File "/home/jording/anaconda3/envs/security/lib/python3.11/multiprocessing/process.py", line 108, in run
+2024-08-22 09:00:13 | ERROR | stderr |     self._target(*self._args, **self._kwargs)
+2024-08-22 09:00:13 | ERROR | stderr |   File "/data0/jording/Langchain-Chatchat/startup.py", line 389, in run_model_worker
+2024-08-22 09:00:13 | ERROR | stderr |     app = create_model_worker_app(log_level=log_level, **kwargs)
+2024-08-22 09:00:13 | ERROR | stderr |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2024-08-22 09:00:13 | ERROR | stderr |   File "/data0/jording/Langchain-Chatchat/startup.py", line 217, in create_model_worker_app
+2024-08-22 09:00:13 | ERROR | stderr |     worker = ModelWorker(
+2024-08-22 09:00:13 | ERROR | stderr |              ^^^^^^^^^^^^
+2024-08-22 09:00:13 | ERROR | stderr |   File "/home/jording/anaconda3/envs/security/lib/python3.11/site-packages/fastchat/serve/model_worker.py", line 77, in __init__
+2024-08-22 09:00:13 | ERROR | stderr |     self.model, self.tokenizer = load_model(
+2024-08-22 09:00:13 | ERROR | stderr |                                  ^^^^^^^^^^^
+2024-08-22 09:00:13 | ERROR | stderr |   File "/home/jording/anaconda3/envs/security/lib/python3.11/site-packages/fastchat/model/model_adapter.py", line 348, in load_model
+2024-08-22 09:00:13 | ERROR | stderr |     model, tokenizer = adapter.load_model(model_path, kwargs)
+2024-08-22 09:00:13 | ERROR | stderr |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2024-08-22 09:00:13 | ERROR | stderr |   File "/home/jording/anaconda3/envs/security/lib/python3.11/site-packages/fastchat/model/model_adapter.py", line 1685, in load_model
+2024-08-22 09:00:13 | ERROR | stderr |     model = AutoModelForCausalLM.from_pretrained(
+2024-08-22 09:00:13 | ERROR | stderr |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2024-08-22 09:00:13 | ERROR | stderr |   File "/home/jording/anaconda3/envs/security/lib/python3.11/site-packages/transformers/models/auto/auto_factory.py", line 566, in from_pretrained
+2024-08-22 09:00:13 | ERROR | stderr |     return model_class.from_pretrained(
+2024-08-22 09:00:13 | ERROR | stderr |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2024-08-22 09:00:13 | ERROR | stderr |   File "/home/jording/anaconda3/envs/security/lib/python3.11/site-packages/transformers/modeling_utils.py", line 3850, in from_pretrained
+2024-08-22 09:00:13 | ERROR | stderr |     ) = cls._load_pretrained_model(
+2024-08-22 09:00:13 | ERROR | stderr |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2024-08-22 09:00:13 | ERROR | stderr |   File "/home/jording/anaconda3/envs/security/lib/python3.11/site-packages/transformers/modeling_utils.py", line 4259, in _load_pretrained_model
+2024-08-22 09:00:13 | ERROR | stderr |     state_dict = load_state_dict(shard_file)
+2024-08-22 09:00:13 | ERROR | stderr |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2024-08-22 09:00:13 | ERROR | stderr |   File "/home/jording/anaconda3/envs/security/lib/python3.11/site-packages/transformers/modeling_utils.py", line 506, in load_state_dict
+2024-08-22 09:00:13 | ERROR | stderr |     with safe_open(checkpoint_file, framework="pt") as f:
+2024-08-22 09:00:13 | ERROR | stderr |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2024-08-22 09:00:13 | ERROR | stderr | safetensors_rust.SafetensorError: Error while deserializing header: HeaderTooSmall

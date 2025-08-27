@@ -1,0 +1,23 @@
+2025-05-26 11:04:41 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m3151415[0m]
+2025-05-26 11:04:41 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-05-26 11:04:41 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-05-26 11:04:41 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://0.0.0.0:19249[0m (Press CTRL+C to quit)
+2025-05-26 11:29:06 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m3218626[0m]
+2025-05-26 11:29:06 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-05-26 11:29:06 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-05-26 11:29:06 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://0.0.0.0:19249[0m (Press CTRL+C to quit)
+2025-05-26 14:24:24 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m3681912[0m]
+2025-05-26 14:24:24 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-05-26 14:24:24 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-05-26 14:24:24 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://0.0.0.0:19249[0m (Press CTRL+C to quit)
+2025-05-26 14:29:35 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m3695263[0m]
+2025-05-26 14:29:35 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-05-26 14:29:35 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-05-26 14:29:35 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://0.0.0.0:19249[0m (Press CTRL+C to quit)
+2025-05-26 16:25:51 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m4008727[0m]
+2025-05-26 16:25:51 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-05-26 16:25:51 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-05-26 16:25:51 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://0.0.0.0:19249[0m (Press CTRL+C to quit)
+2025-05-26 16:26:47 | INFO | stdout | [32mINFO[0m:     127.0.0.1:42596 - "[1mPOST /v1/chat/completions HTTP/1.1[0m" [32m200 OK[0m
+2025-05-26 16:29:29 | INFO | stdout | [32mINFO[0m:     127.0.0.1:40204 - "[1mPOST /v1/chat/completions HTTP/1.1[0m" [32m200 OK[0m
+2025-05-26 16:31:59 | INFO | stdout | [32mINFO[0m:     127.0.0.1:54718 - "[1mPOST /v1/chat/completions HTTP/1.1[0m" [32m200 OK[0m

@@ -1,0 +1,35 @@
+2025-05-26 14:24:25 | INFO | model_worker | Loading the model ['测试模型1-14B'] on worker 0c06fd02 ...
+2025-05-26 14:24:25 | ERROR | stderr | Process model_worker - 测试模型1-14B:
+2025-05-26 14:24:25 | ERROR | stderr | Traceback (most recent call last):
+2025-05-26 14:24:25 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/transformers/models/auto/configuration_auto.py", line 1117, in from_pretrained
+2025-05-26 14:24:25 | ERROR | stderr |     config_class = CONFIG_MAPPING[config_dict["model_type"]]
+2025-05-26 14:24:25 | ERROR | stderr |                    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-26 14:24:25 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/transformers/models/auto/configuration_auto.py", line 813, in __getitem__
+2025-05-26 14:24:25 | ERROR | stderr |     raise KeyError(key)
+2025-05-26 14:24:25 | ERROR | stderr | KeyError: 'qwen3'
+2025-05-26 14:24:25 | ERROR | stderr | 
+2025-05-26 14:24:25 | ERROR | stderr | During handling of the above exception, another exception occurred:
+2025-05-26 14:24:25 | ERROR | stderr | 
+2025-05-26 14:24:25 | ERROR | stderr | Traceback (most recent call last):
+2025-05-26 14:24:25 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+2025-05-26 14:24:25 | ERROR | stderr |     self.run()
+2025-05-26 14:24:25 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/multiprocessing/process.py", line 108, in run
+2025-05-26 14:24:25 | ERROR | stderr |     self._target(*self._args, **self._kwargs)
+2025-05-26 14:24:25 | ERROR | stderr |   File "/home/ding/zt/LLM/startup.py", line 389, in run_model_worker
+2025-05-26 14:24:25 | ERROR | stderr |     app = create_model_worker_app(log_level=log_level, **kwargs)
+2025-05-26 14:24:25 | ERROR | stderr |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-26 14:24:25 | ERROR | stderr |   File "/home/ding/zt/LLM/startup.py", line 217, in create_model_worker_app
+2025-05-26 14:24:25 | ERROR | stderr |     worker = ModelWorker(
+2025-05-26 14:24:25 | ERROR | stderr |              ^^^^^^^^^^^^
+2025-05-26 14:24:25 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/fastchat/serve/model_worker.py", line 77, in __init__
+2025-05-26 14:24:25 | ERROR | stderr |     self.model, self.tokenizer = load_model(
+2025-05-26 14:24:25 | ERROR | stderr |                                  ^^^^^^^^^^^
+2025-05-26 14:24:25 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/fastchat/model/model_adapter.py", line 348, in load_model
+2025-05-26 14:24:25 | ERROR | stderr |     model, tokenizer = adapter.load_model(model_path, kwargs)
+2025-05-26 14:24:25 | ERROR | stderr |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-26 14:24:25 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/fastchat/model/model_adapter.py", line 1675, in load_model
+2025-05-26 14:24:25 | ERROR | stderr |     config = AutoConfig.from_pretrained(
+2025-05-26 14:24:25 | ERROR | stderr |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-26 14:24:25 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/transformers/models/auto/configuration_auto.py", line 1119, in from_pretrained
+2025-05-26 14:24:25 | ERROR | stderr |     raise ValueError(
+2025-05-26 14:24:25 | ERROR | stderr | ValueError: The checkpoint you are trying to load has model type `qwen3` but Transformers does not recognize this architecture. This could be because of an issue with the checkpoint, or because your version of Transformers is out of date.

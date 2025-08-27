@@ -1,0 +1,42 @@
+nohup: 忽略输入
+
+【"【小赢卡贷】最高可借20万，现金直接到卡，戳 yinae.cn/aaeFEW 或微信搜索“小赢卡贷借款”小程序申请，超快超便捷。拒收请回复R"】是诈骗短信吗?根据你的知识，简洁和专业的来回答问题。如果你能肯定判断是诈骗短信，请说“是”。如果你不能肯定判断是涉诈短信，请说“我无法肯定这条短信为涉诈短信”，不允许在答案中添加编造成分，答案请使用中文。
+请严格按照规定进行输出，你的输出只能是：“是”, 或者 “我无法肯定这条短信为涉诈短信” ，不要出现任何其他不同的回答或字眼或符号
+
+是
+Traceback (most recent call last):
+  File "/home/ding/LLM/baseline/kimiapibase.py", line 76, in <module>
+    process_csv_files(folder_path, output_file)
+  File "/home/ding/LLM/baseline/kimiapibase.py", line 49, in process_csv_files
+    response = ask_kimi(question_prompt + prompt)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ding/LLM/baseline/kimiapibase.py", line 16, in ask_kimi
+    completion = client.chat.completions.create(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/openai/_utils/_utils.py", line 271, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/openai/resources/chat/completions.py", line 648, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/openai/_base_client.py", line 1179, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/openai/_base_client.py", line 868, in request
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/openai/_base_client.py", line 944, in _request
+    return self._retry_request(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/openai/_base_client.py", line 992, in _retry_request
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/openai/_base_client.py", line 944, in _request
+    return self._retry_request(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/openai/_base_client.py", line 992, in _retry_request
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/openai/_base_client.py", line 959, in _request
+    raise self._make_status_error_from_response(err.response) from None
+openai.RateLimitError: Error code: 429 - {'error': {'message': 'Your account coecrlpkqq4n8ii87bvg<ak-ewjnthpw1bki11be8nh1> request reached max request: 3, please try again after 1 seconds', 'type': 'rate_limit_reached_error'}}

@@ -1,0 +1,4 @@
+2024-10-28 23:19:19 | INFO | model_worker | Loading the model ['测试模型1-14B'] on worker 06b708fe ...
+2024-10-28 23:19:19 | ERROR | stderr | Loading checkpoint shards:   0%|                                                                                                                  | 0/8 [00:00<?, ?it/s]
+2024-10-28 23:20:04 | ERROR | stderr | Loading checkpoint shards:  12%|█████████████▎                                                                                            | 1/8 [00:44<05:11, 44.47s/it]
+2024-10-28 23:20:49 | ERROR | stderr | Loading checkpoint shards:  25%|██████████████████████████▌                                                                               | 2/8 [01:30<04:30, 45.15s/it]

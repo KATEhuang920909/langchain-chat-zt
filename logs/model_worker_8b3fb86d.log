@@ -1,0 +1,13 @@
+2024-09-09 11:03:40 | INFO | model_worker | Loading the model ['测试模型1-14B'] on worker 8b3fb86d ...
+2024-09-09 11:03:41 | ERROR | stderr | Loading checkpoint shards:   0%|                                                                    | 0/8 [00:00<?, ?it/s]
+2024-09-09 11:03:55 | ERROR | stderr | Loading checkpoint shards:  12%|███████▌                                                    | 1/8 [00:14<01:39, 14.25s/it]
+2024-09-09 11:04:01 | ERROR | stderr | Loading checkpoint shards:  25%|███████████████                                             | 2/8 [00:20<00:56,  9.42s/it]
+2024-09-09 11:04:09 | ERROR | stderr | Loading checkpoint shards:  38%|██████████████████████▌                                     | 3/8 [00:28<00:43,  8.76s/it]
+2024-09-09 11:04:18 | ERROR | stderr | Loading checkpoint shards:  50%|██████████████████████████████                              | 4/8 [00:37<00:35,  8.89s/it]
+2024-09-09 11:04:23 | ERROR | stderr | Loading checkpoint shards:  62%|█████████████████████████████████████▌                      | 5/8 [00:42<00:22,  7.46s/it]
+2024-09-09 11:04:30 | ERROR | stderr | Loading checkpoint shards:  75%|█████████████████████████████████████████████               | 6/8 [00:49<00:14,  7.32s/it]
+2024-09-09 11:04:33 | ERROR | stderr | Loading checkpoint shards:  88%|████████████████████████████████████████████████████▌       | 7/8 [00:52<00:06,  6.05s/it]
+2024-09-09 11:04:34 | ERROR | stderr | Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████| 8/8 [00:53<00:00,  4.32s/it]
+2024-09-09 11:04:34 | ERROR | stderr | Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████| 8/8 [00:53<00:00,  6.67s/it]
+2024-09-09 11:04:34 | ERROR | stderr | 
+2024-09-09 11:04:34 | INFO | model_worker | Register to controller

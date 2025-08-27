@@ -1,0 +1,105 @@
+2024-10-23 09:50:50 | INFO | model_worker | Loading the model ['测试模型1-14B'] on worker f2df50d6 ...
+2024-10-23 09:50:50 | ERROR | stderr | Loading checkpoint shards:   0%|                                                                                                                                  | 0/8 [00:00<?, ?it/s]
+2024-10-23 09:50:50 | ERROR | stderr | Loading checkpoint shards:  12%|███████████████▎                                                                                                          | 1/8 [00:00<00:02,  2.89it/s]
+2024-10-23 09:50:50 | ERROR | stderr | Loading checkpoint shards:  25%|██████████████████████████████▌                                                                                           | 2/8 [00:00<00:02,  2.86it/s]
+2024-10-23 09:50:51 | ERROR | stderr | Loading checkpoint shards:  38%|█████████████████████████████████████████████▊                                                                            | 3/8 [00:01<00:01,  2.85it/s]
+2024-10-23 09:50:51 | ERROR | stderr | Loading checkpoint shards:  50%|█████████████████████████████████████████████████████████████                                                             | 4/8 [00:01<00:01,  2.87it/s]
+2024-10-23 09:50:52 | ERROR | stderr | Loading checkpoint shards:  62%|████████████████████████████████████████████████████████████████████████████▎                                             | 5/8 [00:01<00:01,  2.83it/s]
+2024-10-23 09:50:52 | ERROR | stderr | Loading checkpoint shards:  75%|███████████████████████████████████████████████████████████████████████████████████████████▌                              | 6/8 [00:02<00:00,  2.89it/s]
+2024-10-23 09:50:52 | ERROR | stderr | Loading checkpoint shards:  88%|██████████████████████████████████████████████████████████████████████████████████████████████████████████▊               | 7/8 [00:02<00:00,  3.05it/s]
+2024-10-23 09:50:52 | ERROR | stderr | Loading checkpoint shards: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 8/8 [00:02<00:00,  3.41it/s]
+2024-10-23 09:50:52 | ERROR | stderr | Loading checkpoint shards: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 8/8 [00:02<00:00,  3.08it/s]
+2024-10-23 09:50:52 | ERROR | stderr | 
+2024-10-23 09:50:53 | ERROR | stderr | Process model_worker - 测试模型1-14B:
+2024-10-23 09:50:53 | ERROR | stderr | Traceback (most recent call last):
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/torch/cuda/__init__.py", line 311, in _lazy_init
+2024-10-23 09:50:53 | ERROR | stderr |     queued_call()
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/torch/cuda/__init__.py", line 180, in _check_capability
+2024-10-23 09:50:53 | ERROR | stderr |     capability = get_device_capability(d)
+2024-10-23 09:50:53 | ERROR | stderr |                  ^^^^^^^^^^^^^^^^^^^^^^^^
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/torch/cuda/__init__.py", line 435, in get_device_capability
+2024-10-23 09:50:53 | ERROR | stderr |     prop = get_device_properties(device)
+2024-10-23 09:50:53 | ERROR | stderr |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/torch/cuda/__init__.py", line 453, in get_device_properties
+2024-10-23 09:50:53 | ERROR | stderr |     return _get_device_properties(device)  # type: ignore[name-defined]
+2024-10-23 09:50:53 | ERROR | stderr |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2024-10-23 09:50:53 | ERROR | stderr | RuntimeError: device >= 0 && device < num_gpus INTERNAL ASSERT FAILED at "../aten/src/ATen/cuda/CUDAContext.cpp":50, please report a bug to PyTorch. device=1, num_gpus=
+2024-10-23 09:50:53 | ERROR | stderr | 
+2024-10-23 09:50:53 | ERROR | stderr | The above exception was the direct cause of the following exception:
+2024-10-23 09:50:53 | ERROR | stderr | 
+2024-10-23 09:50:53 | ERROR | stderr | Traceback (most recent call last):
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+2024-10-23 09:50:53 | ERROR | stderr |     self.run()
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/multiprocessing/process.py", line 108, in run
+2024-10-23 09:50:53 | ERROR | stderr |     self._target(*self._args, **self._kwargs)
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/LLM/startup.py", line 389, in run_model_worker
+2024-10-23 09:50:53 | ERROR | stderr |     app = create_model_worker_app(log_level=log_level, **kwargs)
+2024-10-23 09:50:53 | ERROR | stderr |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/LLM/startup.py", line 217, in create_model_worker_app
+2024-10-23 09:50:53 | ERROR | stderr |     worker = ModelWorker(
+2024-10-23 09:50:53 | ERROR | stderr |              ^^^^^^^^^^^^
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/fastchat/serve/model_worker.py", line 77, in __init__
+2024-10-23 09:50:53 | ERROR | stderr |     self.model, self.tokenizer = load_model(
+2024-10-23 09:50:53 | ERROR | stderr |                                  ^^^^^^^^^^^
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/fastchat/model/model_adapter.py", line 362, in load_model
+2024-10-23 09:50:53 | ERROR | stderr |     model.to(device)
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/transformers/modeling_utils.py", line 2595, in to
+2024-10-23 09:50:53 | ERROR | stderr |     return super().to(*args, **kwargs)
+2024-10-23 09:50:53 | ERROR | stderr |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1160, in to
+2024-10-23 09:50:53 | ERROR | stderr |     return self._apply(convert)
+2024-10-23 09:50:53 | ERROR | stderr |            ^^^^^^^^^^^^^^^^^^^^
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/torch/nn/modules/module.py", line 810, in _apply
+2024-10-23 09:50:53 | ERROR | stderr |     module._apply(fn)
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/torch/nn/modules/module.py", line 810, in _apply
+2024-10-23 09:50:53 | ERROR | stderr |     module._apply(fn)
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/torch/nn/modules/module.py", line 833, in _apply
+2024-10-23 09:50:53 | ERROR | stderr |     param_applied = fn(param)
+2024-10-23 09:50:53 | ERROR | stderr |                     ^^^^^^^^^
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1158, in convert
+2024-10-23 09:50:53 | ERROR | stderr |     return t.to(device, dtype if t.is_floating_point() or t.is_complex() else None, non_blocking)
+2024-10-23 09:50:53 | ERROR | stderr |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/torch/cuda/__init__.py", line 317, in _lazy_init
+2024-10-23 09:50:53 | ERROR | stderr |     raise DeferredCudaCallError(msg) from e
+2024-10-23 09:50:53 | ERROR | stderr | torch.cuda.DeferredCudaCallError: CUDA call failed lazily at initialization with error: device >= 0 && device < num_gpus INTERNAL ASSERT FAILED at "../aten/src/ATen/cuda/CUDAContext.cpp":50, please report a bug to PyTorch. device=1, num_gpus=
+2024-10-23 09:50:53 | ERROR | stderr | 
+2024-10-23 09:50:53 | ERROR | stderr | CUDA call was originally invoked at:
+2024-10-23 09:50:53 | ERROR | stderr | 
+2024-10-23 09:50:53 | ERROR | stderr |   File "<string>", line 1, in <module>
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/multiprocessing/spawn.py", line 122, in spawn_main
+2024-10-23 09:50:53 | ERROR | stderr |     exitcode = _main(fd, parent_sentinel)
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/multiprocessing/spawn.py", line 131, in _main
+2024-10-23 09:50:53 | ERROR | stderr |     prepare(preparation_data)
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/multiprocessing/spawn.py", line 246, in prepare
+2024-10-23 09:50:53 | ERROR | stderr |     _fixup_main_from_path(data['init_main_from_path'])
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/multiprocessing/spawn.py", line 297, in _fixup_main_from_path
+2024-10-23 09:50:53 | ERROR | stderr |     main_content = runpy.run_path(main_path,
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen runpy>", line 291, in run_path
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen runpy>", line 98, in _run_module_code
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen runpy>", line 88, in _run_code
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/LLM/startup.py", line 34, in <module>
+2024-10-23 09:50:53 | ERROR | stderr |     from server.utils import (fschat_controller_address, fschat_model_worker_address,
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/LLM/server/utils.py", line 28, in <module>
+2024-10-23 09:50:53 | ERROR | stderr |     import torch
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/torch/__init__.py", line 1332, in <module>
+2024-10-23 09:50:53 | ERROR | stderr |     _C._initExtension(manager_path())
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+2024-10-23 09:50:53 | ERROR | stderr |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/torch/cuda/__init__.py", line 244, in <module>
+2024-10-23 09:50:53 | ERROR | stderr |     _lazy_call(_check_capability)
+2024-10-23 09:50:53 | ERROR | stderr |   File "/home/ding/anaconda3/envs/security/lib/python3.11/site-packages/torch/cuda/__init__.py", line 241, in _lazy_call
+2024-10-23 09:50:53 | ERROR | stderr |     _queued_calls.append((callable, traceback.format_stack()))
+2024-10-23 09:50:53 | ERROR | stderr | 
