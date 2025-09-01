@@ -10,7 +10,7 @@ import io
 import re
 import time
 from configs import (TEMPERATURE, HISTORY_LEN, PROMPT_TEMPLATES, LLM_MODELS,
-                     DEFAULT_KNOWLEDGE_BASE, DEFAULT_SEARCH_ENGINE, SUPPORT_AGENT_MODEL,BM25_SEARCH_TOP_K)
+                     DEFAULT_KNOWLEDGE_BASE, DEFAULT_SEARCH_ENGINE, SUPPORT_AGENT_MODEL, BM25_SEARCH_TOP_K)
 from server.knowledge_base.utils import LOADER_DICT
 import uuid
 from typing import List, Dict
@@ -71,10 +71,11 @@ def upload_temp_docs_v2(files, _api: ApiRequest) -> tuple:
               "documents": documents
               })
     '''
-    id = _api.upload_temp_docs_v2(files).get("data", {}).get("id")
-    success_info = _api.upload_temp_docs_v2(files).get("data", {}).get("success_info")
-    table_df = _api.upload_temp_docs_v2(files).get("data", {}).get("table_df")
-    documents = _api.upload_temp_docs_v2(files).get("data", {}).get("documents")
+    print("_api.upload_temp_docs_v2(files)", files)
+    print("_api.upload_temp_docs_v2(files)", _api.upload_temp_docs_v2(files))
+    data = _api.upload_temp_docs_v2(files).get("data", {})
+    id, success_info, table_df, documents = data.get("id"), data.get("success_info"), data.get("table_df"), data.get(
+        "documents")
     return id, success_info, table_df, documents
 
 
@@ -288,13 +289,15 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                 # score_threshold = st.slider("知识匹配分数阈值：", 0.0, 2.0, float(SCORE_THRESHOLD), 0.01)
                 if st.button("开始上传", disabled=len(files) == 0):
                     doc_id, success_info, table_df, documents = upload_temp_docs_v2(files, api)
-                    print("files",files)
+                    print("files", files)
                     print("success_info", success_info)
                     print("table_df", table_df)
-                    print("documents",documents)
+                    print("documents", documents)
                     st.session_state["file_chat_id"] = doc_id
                     st.success(success_info)
-                    st.session_state.df_upload = pd.concat([st.session_state.df_upload, table_df], ignore_index=True)
+                    selection = st.dataframe(pd.concat([st.session_state.df_upload, pd.DataFrame(table_df)]),
+                                 use_container_width=True,hide_index=True,on_select="rerun",key=3)
+
 
         elif dialogue_mode == "日志解析":
             search_engine_list = api.list_search_engines()

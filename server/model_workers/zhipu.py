@@ -65,7 +65,7 @@ class ChatGLMWorker(ApiModelWorker):
             "messages": params.messages,
             "max_tokens": params.max_tokens,
             "temperature": params.temperature,
-            "stream": False
+            "stream": True
         }
 
         url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"

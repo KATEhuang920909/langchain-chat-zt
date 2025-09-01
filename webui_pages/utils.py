@@ -436,8 +436,8 @@ class ApiRequest:
             "chunk_overlap": chunk_overlap,
             "zh_title_enhance": zh_title_enhance,
         }
-        print("files",files)
-        print("data", data)
+        print("files__",files)
+        print("data__", data)
         response = self.post(
             "/knowledge_base/upload_temp_docs_v2",
             data=data,
@@ -479,6 +479,43 @@ class ApiRequest:
             stream=True,
         )
         return self._httpx_stream2generator(response, as_json=True)
+
+    def file_chat_v2(
+            self,
+            query: str,
+            knowledge_id: str,
+            top_k: int = VECTOR_SEARCH_TOP_K,
+            score_threshold: float = SCORE_THRESHOLD,
+            history: List[Dict] = [],
+            stream: bool = True,
+            model: str = LLM_MODELS[0],
+            temperature: float = TEMPERATURE,
+            max_tokens: int = None,
+            prompt_name: str = "default",
+    ):
+        '''
+        对应api.py/chat/file_chat接口
+        '''
+        data = {
+            "query": query,
+            "knowledge_id": knowledge_id,
+            "top_k": top_k,
+            "score_threshold": score_threshold,
+            "history": history,
+            "stream": stream,
+            "model_name": model,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "prompt_name": prompt_name,
+        }
+
+        response = self.post(
+            "/chat/file_chat",
+            json=data,
+            stream=True,
+        )
+        return self._httpx_stream2generator(response, as_json=True)
+
 
     @deprecated(
         since="0.3.0",
