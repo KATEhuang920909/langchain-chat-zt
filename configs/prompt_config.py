@@ -113,5 +113,11 @@ PROMPT_TEMPLATES = {
             'Thought: {agent_scratchpad}\n'
             'Please analyze and summarize the content of this webpage in detail, and then analyze whether it is related to telecommunications fraud.You can only answer in Chinese.\n',
 
-    }
+    },
+    "material_match": {
+            "置空":  # 搜不到知识库的时候使用
+                '请你回答我的问题:\n'
+                '{{ question }}\n\n',
+
+        }
 }

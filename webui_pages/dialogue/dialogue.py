@@ -28,6 +28,32 @@ chat_box = ChatBox(
         "提问者.png"
     )
 )
+# 向页面注入自定义 CSS
+hide_drag_drop_style = """
+    <style>
+        /*  targeting the drag and drop area of st.file_uploader */
+        div[data-testid="stFileUploaderDropzone"] {
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+            padding: 10px;
+            text-align: center;
+            /* 尝试隐藏整个拖拽区域 */
+            display: none !important;
+        }
+        /* 你可能还需要调整外部容器，确保“浏览文件”按钮仍然可见 */
+        section[data-testid="stFileUploader"] > div:first-child {
+            /* 调整样式，例如只让按钮显示 */
+            border: none;
+            padding: 0;
+        }
+        /* 确保“Browse files”按钮本身可见 */
+        button[data-testid="baseButton-primary"] {
+            /* 确保上传按钮的样式 */
+            display: block !important;
+        }
+    </style>
+"""
+st.markdown(hide_drag_drop_style, unsafe_allow_html=True)
 
 
 def get_messages_history(history_len: int, content_in_expander: bool = False) -> List[Dict]:
@@ -130,6 +156,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
     st.session_state.setdefault("conversation_ids", {})
     st.session_state["conversation_ids"].setdefault(chat_box.cur_chat_name, uuid.uuid4().hex)
     st.session_state.setdefault("file_chat_id", None)
+
     default_model = api.get_default_llm_model()[0]
 
     if not chat_box.chat_inited:
@@ -231,7 +258,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
 
         index_prompt = {
             "LLM 对话": "llm_chat",
-            "材料匹配": "agent_chat",
+            "材料匹配": "material_match",
             "日志解析": "search_engine_chat",
             "知识库问答": "knowledge_base_chat",
             "文件对话": "knowledge_base_chat",
@@ -277,28 +304,109 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                 ## Bge 模型会超过1
                 score_threshold = st.slider("知识匹配分数阈值：", 0.0, 2.0, float(SCORE_THRESHOLD), 0.01)
         elif dialogue_mode == "文件对话":
-            st.session_state.df_upload = pd.DataFrame([], columns=["序号", "文件名", "材料类型"])
+
             with st.expander("文件对话配置", True):
                 files = st.file_uploader("上传知识文件：",
                                          [i for ls in LOADER_DICT.values() for i in ls],
                                          accept_multiple_files=True,
                                          )
+
                 kb_top_k = st.number_input("匹配知识条数：", 1, 20, BM25_SEARCH_TOP_K)
 
                 ## Bge 模型会超过1
                 # score_threshold = st.slider("知识匹配分数阈值：", 0.0, 2.0, float(SCORE_THRESHOLD), 0.01)
-                if st.button("开始上传", disabled=len(files) == 0):
-                    doc_id, success_info, table_df, documents = upload_temp_docs_v2(files, api)
-                    print("files", files)
-                    print("success_info", success_info)
-                    print("table_df", table_df)
-                    print("documents", documents)
-                    st.session_state["file_chat_id"] = doc_id
-                    st.success(success_info)
-                    selection = st.dataframe(pd.concat([st.session_state.df_upload, pd.DataFrame(table_df)]),
-                                 use_container_width=True,hide_index=True,on_select="rerun",key=3)
+                upload_button = st.button("开始上传", disabled=len(files) == 0)
 
 
+                if upload_button:
+                    st.session_state.setdefault("documents", [])
+                    # st.session_state.setdefault("select_documents", [])
+                    # st.session_state.setdefault("selected_rows", [])
+                    #
+                    st.session_state.setdefault("df_upload", pd.DataFrame([], columns=["文件名", "材料类型"]))
+
+
+                    if len(files) != 0:
+                        doc_id, success_info, table_df, documents = upload_temp_docs_v2(files, api)
+                        # documents = [[k["page_content"] for k in doc] for doc in documents]
+                        print("files", files)
+                        print("success_info", success_info)
+                        print("table_df", table_df)
+                        print("documents", documents)
+                        st.session_state["file_chat_id"] = doc_id
+                        st.session_state["documents"] = documents
+                        st.success(success_info)
+                        st.session_state["df_upload"] = pd.DataFrame(table_df)
+                # selection = st.dataframe(st.session_state.df_upload,
+                #                          use_container_width=True,
+                #                          hide_index=True,
+                #                          on_select="rerun",
+                #                          selection_mode="multi-row",  # 允许多行选择
+                #                          key="my_dataframe",
+                #                          )
+                # selected_rows = selection["selection"]["rows"]
+                    file_name = st.session_state["df_upload"]["文件名"].values.tolist()
+                # if selected_rows:
+                #     documents = [st.session_state["documents"][i] for i in selected_rows]
+                #     st.session_state["select_documents"] = documents
+                #     __ = [st.write(f"✅使用文档：{file_name[i]}") for i in selected_rows]
+
+                if upload_button:
+                    # st.session_state["select_documents"] = st.session_state["documents"]
+
+                    __ = [st.write(f"✅使用文档：{name}") for name in file_name]
+        elif dialogue_mode == "材料匹配":
+
+            with st.expander("材料匹配配置", True):
+                files = st.file_uploader("上传知识文件：",
+                                         [i for ls in LOADER_DICT.values() for i in ls],
+                                         accept_multiple_files=True,
+                                         )
+
+                kb_top_k = st.number_input("匹配知识条数：", 1, 20, BM25_SEARCH_TOP_K)
+
+                ## Bge 模型会超过1
+                # score_threshold = st.slider("知识匹配分数阈值：", 0.0, 2.0, float(SCORE_THRESHOLD), 0.01)
+                upload_button = st.button("开始上传", disabled=len(files) == 0)
+
+
+                if upload_button:
+                    st.session_state.setdefault("documents", [])
+                    # st.session_state.setdefault("select_documents", [])
+                    # st.session_state.setdefault("selected_rows", [])
+                    #
+                    st.session_state.setdefault("df_upload", pd.DataFrame([], columns=["文件名", "材料类型"]))
+
+
+                    if len(files) != 0:
+                        doc_id, success_info, table_df, documents = upload_temp_docs_v2(files, api)
+                        # documents = [[k["page_content"] for k in doc] for doc in documents]
+                        print("files", files)
+                        print("success_info", success_info)
+                        print("table_df", table_df)
+                        print("documents", documents)
+                        st.session_state["file_chat_id"] = doc_id
+                        st.session_state["documents"] = documents
+                        st.success(success_info)
+                        st.session_state["df_upload"] = pd.DataFrame(table_df)
+                # selection = st.dataframe(st.session_state.df_upload,
+                #                          use_container_width=True,
+                #                          hide_index=True,
+                #                          on_select="rerun",
+                #                          selection_mode="multi-row",  # 允许多行选择
+                #                          key="my_dataframe",
+                #                          )
+                # selected_rows = selection["selection"]["rows"]
+                    file_name = st.session_state["df_upload"]["文件名"].values.tolist()
+                # if selected_rows:
+                #     documents = [st.session_state["documents"][i] for i in selected_rows]
+                #     st.session_state["select_documents"] = documents
+                #     __ = [st.write(f"✅使用文档：{file_name[i]}") for i in selected_rows]
+
+                if upload_button:
+                    # st.session_state["select_documents"] = st.session_state["documents"]
+
+                    __ = [st.write(f"✅使用文档：{name}") for name in file_name]
         elif dialogue_mode == "日志解析":
             search_engine_list = api.list_search_engines()
             if DEFAULT_SEARCH_ENGINE in search_engine_list:
@@ -478,14 +586,22 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                     Markdown("...", in_expander=True, title="文件匹配结果", state="complete"),
                 ])
                 text = ""
-                for d in api.file_chat(prompt,
-                                       knowledge_id=st.session_state["file_chat_id"],
-                                       top_k=kb_top_k,
-                                       score_threshold=score_threshold,
-                                       history=history,
-                                       model=llm_model,
-                                       prompt_name=prompt_template_name,
-                                       temperature=temperature):
+                print("prompt", prompt,
+                      "file_chat_id", st.session_state["file_chat_id"],
+                      "select_documents", st.session_state["documents"],
+                      "kb_top_k", kb_top_k,
+                      "history", history,
+                      "llm_model", llm_model,
+                      "prompt_template_name", prompt_template_name,
+                      "temperature", temperature)
+                for d in api.file_chat_v2(prompt,
+                                          knowledge_id=st.session_state["file_chat_id"],
+                                          documents=st.session_state["documents"],
+                                          top_k=kb_top_k,
+                                          history=history,
+                                          model_name=llm_model,
+                                          prompt_name=prompt_template_name,
+                                          temperature=temperature):
                     if error_msg := check_error_msg(d):  # check whether error occured
                         st.error(error_msg)
                     elif chunk := d.get("answer"):

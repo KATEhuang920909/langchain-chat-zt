@@ -9,11 +9,11 @@ import sys
 from configs import VERSION
 from server.utils import api_address
 
-
 api = ApiRequest(base_url=api_address())
 
 if __name__ == "__main__":
     is_lite = "lite" in sys.argv
+
 
     def check_password():
         """Returns `True` if the user had a correct password."""
@@ -21,7 +21,7 @@ if __name__ == "__main__":
         def login_form():
             """Form with widgets to collect user information"""
             with st.form("Credentials"):
-                st.subheader("智能化安全运营交互式知识服务平台登录页面")
+                st.subheader("能力中台安全测评工具")
                 st.text_input("用户名", key="username")
                 st.text_input("密码", type="password", key="password")
                 st.form_submit_button("登录", on_click=password_entered)
@@ -49,6 +49,7 @@ if __name__ == "__main__":
         if "password_correct" in st.session_state:
             st.error("您的密码有误，请重新输入或者联系管理员")
         return False
+
 
     if not check_password():
         st.stop()
@@ -79,12 +80,12 @@ if __name__ == "__main__":
                 "img",
                 "能力中台安全测评工具.png"
             ),
-            use_column_width=True
+            use_container_width=True
         )
-        st.caption(
-            f"""测试版V2，仅供内部使用""",
-            unsafe_allow_html=True,
-        )
+        # st.caption(
+        #     f"""测试版V2，仅供内部使用""",
+        #     unsafe_allow_html=True,
+        # )
         options = list(pages)
         icons = [x["icon"] for x in pages.values()]
 
@@ -99,5 +100,3 @@ if __name__ == "__main__":
 
     if selected_page in pages:
         pages[selected_page]["func"](api=api, is_lite=is_lite)
-
-

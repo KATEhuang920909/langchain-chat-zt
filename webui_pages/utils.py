@@ -17,6 +17,7 @@ from configs import (
     SEARCH_ENGINE_TOP_K,
     HTTPX_DEFAULT_TIMEOUT,
     logger, log_verbose,
+    BM25_SEARCH_TOP_K
 )
 import httpx
 import contextlib
@@ -407,6 +408,7 @@ class ApiRequest:
             files=[("files", (filename, file)) for filename, file in files],
         )
         return self._get_response_value(response, as_json=True)
+
     def upload_temp_docs_v2(
             self,
             files: List[Union[str, Path, bytes]],
@@ -436,7 +438,7 @@ class ApiRequest:
             "chunk_overlap": chunk_overlap,
             "zh_title_enhance": zh_title_enhance,
         }
-        print("files__",files)
+        print("files__", files)
         print("data__", data)
         response = self.post(
             "/knowledge_base/upload_temp_docs_v2",
@@ -444,6 +446,7 @@ class ApiRequest:
             files=[("files", (filename, file)) for filename, file in files],
         )
         return self._get_response_value(response, as_json=True)
+
     def file_chat(
             self,
             query: str,
@@ -484,38 +487,39 @@ class ApiRequest:
             self,
             query: str,
             knowledge_id: str,
-            top_k: int = VECTOR_SEARCH_TOP_K,
-            score_threshold: float = SCORE_THRESHOLD,
+            documents: list,
+            top_k: int = BM25_SEARCH_TOP_K,
             history: List[Dict] = [],
             stream: bool = True,
-            model: str = LLM_MODELS[0],
+            model_name: str = LLM_MODELS[0],
             temperature: float = TEMPERATURE,
             max_tokens: int = None,
             prompt_name: str = "default",
     ):
+
         '''
         对应api.py/chat/file_chat接口
         '''
         data = {
             "query": query,
             "knowledge_id": knowledge_id,
+            "documents": documents,
             "top_k": top_k,
-            "score_threshold": score_threshold,
             "history": history,
             "stream": stream,
-            "model_name": model,
+            "model_name": model_name,
             "temperature": temperature,
             "max_tokens": max_tokens,
             "prompt_name": prompt_name,
         }
 
+
         response = self.post(
-            "/chat/file_chat",
+            "/chat/file_chat_v2",
             json=data,
             stream=True,
         )
         return self._httpx_stream2generator(response, as_json=True)
-
 
     @deprecated(
         since="0.3.0",
@@ -1073,6 +1077,34 @@ class ApiRequest:
             "message_id": message_id,
             "score": score,
             "reason": reason,
+        }
+        resp = self.post("/chat/feedback", json=data)
+        return self._get_response_value(resp)
+
+    # 训练bm25
+    def train_bm25(
+            self,
+            documents: str,
+    ) -> int:
+        '''
+        反馈对话评价
+        '''
+        data = {
+            "documents": documents
+        }
+        resp = self.post("/chat/feedback", json=data)
+        return self._get_response_value(resp)
+
+    def bm25_search(
+            self,
+            query: str,
+
+    ) -> int:
+        '''
+        反馈对话评价
+        '''
+        data = {
+            "query": documents
         }
         resp = self.post("/chat/feedback", json=data)
         return self._get_response_value(resp)

@@ -4,7 +4,7 @@ import math
 from collections import defaultdict
 
 
-class BM25Chinese:
+class BM25Service:
     def __init__(self):
         self.documents = []
         self.inverted_index = defaultdict(set)
