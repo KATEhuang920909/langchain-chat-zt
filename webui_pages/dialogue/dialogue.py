@@ -358,9 +358,9 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
         elif dialogue_mode == "材料匹配":
 
             with st.expander("材料匹配配置", True):
-                files = st.file_uploader("上传知识文件：",
-                                         [i for ls in LOADER_DICT.values() for i in ls],
-                                         accept_multiple_files=True,
+                files = st.file_uploader("请上传材料清单：",
+                                         [".docx",".xlsx", ".xls","txt"],
+                                         accept_multiple_files=False,
                                          )
 
                 kb_top_k = st.number_input("匹配知识条数：", 1, 20, BM25_SEARCH_TOP_K)
