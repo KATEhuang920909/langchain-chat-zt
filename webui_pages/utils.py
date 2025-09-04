@@ -447,6 +447,44 @@ class ApiRequest:
         )
         return self._get_response_value(response, as_json=True)
 
+    def upload_temp_pkgfile(
+            self,
+            files: List[Union[str, Path, bytes]],
+            knowledge_id: str = None,
+            chunk_size=CHUNK_SIZE,
+            chunk_overlap=OVERLAP_SIZE,
+            zh_title_enhance=ZH_TITLE_ENHANCE,
+    ):
+        '''
+        对应api.py/knowledge_base/upload_tmep_docs接口
+        '''
+
+        def convert_file(file, filename=None):
+            if isinstance(file, bytes):  # raw bytes
+                file = BytesIO(file)
+            elif hasattr(file, "read"):  # a file io like object
+                filename = filename or file.name
+            else:  # a local path
+                file = Path(file).absolute().open("rb")
+                filename = filename or os.path.split(file.name)[-1]
+            return filename, file
+
+        files = [convert_file(file) for file in files]
+        data = {
+            "knowledge_id": knowledge_id,
+            "chunk_size": chunk_size,
+            "chunk_overlap": chunk_overlap,
+            "zh_title_enhance": zh_title_enhance,
+        }
+        print("files__", files)
+        print("data__", data)
+        response = self.post(
+            "/knowledge_base/upload_temp_pkgfile",
+            data=data,
+            files=[("files", (filename, file)) for filename, file in files],
+        )
+        return self._get_response_value(response, as_json=True)
+
     def file_chat(
             self,
             query: str,

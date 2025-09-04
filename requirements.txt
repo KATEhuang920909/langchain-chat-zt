@@ -57,7 +57,6 @@ arxiv==2.1.0
 youtube-search==2.1.2
 duckduckgo-search==3.9.9
 metaphor-python==0.1.23
-docx2txt
 streamlit==1.30.0
 streamlit-option-menu==0.3.12
 streamlit-antd-components==0.3.1
@@ -70,3 +69,7 @@ httpx_sse==0.4.0
 watchdog==3.0.0
 pyjwt==2.8.0
 selenium==4.35.0
+docx2txt
+zipfile
+tarfile
+py7zr

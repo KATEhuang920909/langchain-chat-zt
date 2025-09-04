@@ -98,7 +98,7 @@ LOADER_DICT = {"UnstructuredHTMLLoader": ['.html', '.htm'],
                "RapidOCRPPTLoader": ['.ppt', '.pptx', ],
                "RapidOCRLoader": ['.png', '.jpg', '.jpeg', '.bmp'],
                "UnstructuredFileLoader": ['.eml', '.msg', '.rst',
-                                          '.rtf',  '.xml',
+                                          '.rtf', '.xml',
                                           '.epub', '.odt', '.tsv'],
                "UnstructuredEmailLoader": ['.eml', '.msg'],
                "UnstructuredEPubLoader": ['.epub'],
@@ -115,8 +115,10 @@ LOADER_DICT = {"UnstructuredHTMLLoader": ['.html', '.htm'],
                "UnstructuredXMLLoader": ['.xml'],
                "UnstructuredPowerPointLoader": ['.ppt', '.pptx'],
                "EverNoteLoader": ['.enex'],
+
                }
-SUPPORTED_EXTS = [ext for sublist in LOADER_DICT.values() for ext in sublist]
+PKG_DICT = {"PKGFileLoader": [".zip", ".tar.gz", ".7z"]}
+SUPPORTED_EXTS = [ext for sublist in list(LOADER_DICT.values()) + list(PKG_DICT.values()) for ext in sublist]
 
 
 # patch json.dumps to disable ensure_ascii
@@ -155,7 +157,7 @@ def get_loader(loader_name: str, file_path: str, loader_kwargs: Dict = None):
     '''
     loader_kwargs = loader_kwargs or {}
     try:
-        if loader_name in ["RapidOCRPDFLoader", "RapidOCRLoader", "FilteredCSVLoader",
+        if loader_name in ["RapidOCRPDFLoader", "RapidOCRLoader", "FilteredCSVLoader","PKGFileLoader",
                            "RapidOCRDocLoader", "RapidOCRPPTLoader", "PyPDFLoader", "Docx2txtLoader", "TextLoader"]:
             document_loaders_module = importlib.import_module('document_loaders')
         else:

@@ -110,7 +110,7 @@ def upload_temp_docs_v2(
     documents = []
     path, id = get_temp_dir(prev_id)
     # True, filename, f"成功上传文件 {filename}", docs
-    print("upload_temp_docs_v2_files", files)
+    # print("upload_temp_docs_v2_files", files)
     for success, file, msg, docs in _parse_files_in_thread(files=files,
                                                            dir=path,
                                                            zh_title_enhance=zh_title_enhance,
@@ -122,8 +122,7 @@ def upload_temp_docs_v2(
         #     failed_files.append({file: msg})
 
         if success:
-            documents_info.append({'文件名': file,
-                                   '材料类型': "用户上传"})
+            documents_info.append({'文件名': file})
             documents.append(docs)
             # documents.append(docs)
         else:
@@ -141,7 +140,55 @@ def upload_temp_docs_v2(
               "table_df": new_df if documents_info else "",
               "documents": documents
               })
+def upload_temp_pkgfile(
+        files: List[UploadFile] = File(..., description="上传文件，支持多文件"),
+        prev_id: str = Form(None, description="前知识库ID"),
+        chunk_size: int = Form(CHUNK_SIZE, description="知识库中单段文本最大长度"),
+        chunk_overlap: int = Form(OVERLAP_SIZE, description="知识库中相邻文本重合长度"),
+        zh_title_enhance: bool = Form(ZH_TITLE_ENHANCE, description="是否开启中文标题加强"),
+) -> BaseResponse:
+    '''
+    将文件保存到临时目录，并进行向量化。
+    返回临时目录名称作为ID，同时也是临时向量库的ID。
+    '''
+    if prev_id is not None:
+        memo_faiss_pool.pop(prev_id)
 
+    failed_files = []
+    documents_info = []
+    documents = []
+    path, id = get_temp_dir(prev_id)
+    # True, filename, f"成功上传文件 {filename}", docs
+    # print("upload_temp_docs_v2_files", files)
+    for success, file, msg, docs in _parse_files_in_thread(files=files,
+                                                           dir=path,
+                                                           zh_title_enhance=zh_title_enhance,
+                                                           chunk_size=chunk_size,
+                                                           chunk_overlap=chunk_overlap):
+        # if success:
+        #     documents += docs
+        # else:
+        #     failed_files.append({file: msg})
+
+        if success:
+            documents_info.append({'文件名': file})
+            documents.append(docs)
+            # documents.append(docs)
+        else:
+            failed_files.append({file: msg})
+
+    # with memo_faiss_pool.load_vector_store(id).acquire() as vs:
+    #     vs.add_documents(documents)
+    if documents_info:
+        new_df = pd.DataFrame(documents_info)
+        # st.success(f"✅ 成功添加 {len(documents_info)} 个文件")
+    return BaseResponse(
+        data={"id": id,
+              "failed_files": failed_files,
+              "success_info": f"成功添加 {len(documents_info)} 个文件",
+              "table_df": new_df if documents_info else "",
+              "documents": documents
+              })
 
 async def file_chat(query: str = Body(..., description="用户输入", examples=["你好"]),
                     knowledge_id: str = Body(..., description="临时知识库ID"),

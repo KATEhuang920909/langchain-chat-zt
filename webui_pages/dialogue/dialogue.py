@@ -11,7 +11,7 @@ import re
 import time
 from configs import (TEMPERATURE, HISTORY_LEN, PROMPT_TEMPLATES, LLM_MODELS,
                      DEFAULT_KNOWLEDGE_BASE, DEFAULT_SEARCH_ENGINE, SUPPORT_AGENT_MODEL, BM25_SEARCH_TOP_K)
-from server.knowledge_base.utils import LOADER_DICT
+from server.knowledge_base.utils import LOADER_DICT, ZIP_DICT
 import uuid
 from typing import List, Dict
 import pandas as pd
@@ -104,6 +104,24 @@ def upload_temp_docs_v2(files, _api: ApiRequest) -> tuple:
         "documents")
     return id, success_info, table_df, documents
 
+@st.cache_data
+def upload_temp_zipfile(files, _api: ApiRequest) -> tuple:
+    '''
+    将文件上传到临时目录，用于文件对话
+    返回临时向量库ID
+    {"id": id,
+              "failed_files": failed_files,
+              "success_info": f"成功添加 {len(documents_info)} 个文件",
+              "table_df": new_df if documents_info else "",
+              "documents": documents
+              })
+    '''
+    print("_api.upload_temp_zipfile(files)", files)
+    print("_api.upload_temp_zipfile(files)", _api.upload_temp_zipfile(files))
+    data = _api.upload_temp_zipfile(files).get("data", {})
+    id, success_info, table_df, documents = data.get("id"), data.get("success_info"), data.get("table_df"), data.get(
+        "documents")
+    return id, success_info, table_df, documents
 
 def parse_command(text: str, modal: Modal) -> bool:
     '''
@@ -317,14 +335,12 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                 # score_threshold = st.slider("知识匹配分数阈值：", 0.0, 2.0, float(SCORE_THRESHOLD), 0.01)
                 upload_button = st.button("开始上传", disabled=len(files) == 0)
 
-
                 if upload_button:
                     st.session_state.setdefault("documents", [])
                     # st.session_state.setdefault("select_documents", [])
                     # st.session_state.setdefault("selected_rows", [])
                     #
-                    st.session_state.setdefault("df_upload", pd.DataFrame([], columns=["文件名", "材料类型"]))
-
+                    st.session_state.setdefault("df_upload", pd.DataFrame([], columns=["文件名"]))
 
                     if len(files) != 0:
                         doc_id, success_info, table_df, documents = upload_temp_docs_v2(files, api)
@@ -337,14 +353,14 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                         st.session_state["documents"] = documents
                         st.success(success_info)
                         st.session_state["df_upload"] = pd.DataFrame(table_df)
-                # selection = st.dataframe(st.session_state.df_upload,
-                #                          use_container_width=True,
-                #                          hide_index=True,
-                #                          on_select="rerun",
-                #                          selection_mode="multi-row",  # 允许多行选择
-                #                          key="my_dataframe",
-                #                          )
-                # selected_rows = selection["selection"]["rows"]
+                    # selection = st.dataframe(st.session_state.df_upload,
+                    #                          use_container_width=True,
+                    #                          hide_index=True,
+                    #                          on_select="rerun",
+                    #                          selection_mode="multi-row",  # 允许多行选择
+                    #                          key="my_dataframe",
+                    #                          )
+                    # selected_rows = selection["selection"]["rows"]
                     file_name = st.session_state["df_upload"]["文件名"].values.tolist()
                 # if selected_rows:
                 #     documents = [st.session_state["documents"][i] for i in selected_rows]
@@ -358,30 +374,28 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
         elif dialogue_mode == "材料匹配":
 
             with st.expander("材料匹配配置", True):
-                files = st.file_uploader("请上传材料清单：",
-                                         [".docx",".xlsx", ".xls","txt"],
-                                         accept_multiple_files=False,
-                                         )
+                files_material_list = st.file_uploader("请上传材料清单：",
+                                                       [".docx", ".xlsx", ".xls", "txt"],
+                                                       accept_multiple_files=False,
+                                                       )
 
-                kb_top_k = st.number_input("匹配知识条数：", 1, 20, BM25_SEARCH_TOP_K)
-
-                ## Bge 模型会超过1
-                # score_threshold = st.slider("知识匹配分数阈值：", 0.0, 2.0, float(SCORE_THRESHOLD), 0.01)
-                upload_button = st.button("开始上传", disabled=len(files) == 0)
-
+                files_zip = st.file_uploader("请上传能力材料：",
+                                             [".zip", ".tar.gz", ".7z"],
+                                             accept_multiple_files=False,
+                                             )
+                upload_button = st.button("开始上传", disabled=(len(files_material_list) == 0 or len(files_zip) == 0))
 
                 if upload_button:
                     st.session_state.setdefault("documents", [])
                     # st.session_state.setdefault("select_documents", [])
                     # st.session_state.setdefault("selected_rows", [])
                     #
-                    st.session_state.setdefault("df_upload", pd.DataFrame([], columns=["文件名", "材料类型"]))
+                    st.session_state.setdefault("df_upload", pd.DataFrame([], columns=["文件名"]))
 
-
-                    if len(files) != 0:
-                        doc_id, success_info, table_df, documents = upload_temp_docs_v2(files, api)
+                    if len(files_material_list) != 0:
+                        doc_id, success_info, table_df, documents = upload_temp_docs_v2(files_material_list, api)
                         # documents = [[k["page_content"] for k in doc] for doc in documents]
-                        print("files", files)
+                        print("files", files_material_list)
                         print("success_info", success_info)
                         print("table_df", table_df)
                         print("documents", documents)
@@ -389,14 +403,19 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                         st.session_state["documents"] = documents
                         st.success(success_info)
                         st.session_state["df_upload"] = pd.DataFrame(table_df)
-                # selection = st.dataframe(st.session_state.df_upload,
-                #                          use_container_width=True,
-                #                          hide_index=True,
-                #                          on_select="rerun",
-                #                          selection_mode="multi-row",  # 允许多行选择
-                #                          key="my_dataframe",
-                #                          )
-                # selected_rows = selection["selection"]["rows"]
+
+                    if len(files_zip) != 0:
+                        doc_id, success_info, table_df, documents = upload_temp_docs_v2(files_zip, api)
+                        # documents = [[k["page_content"] for k in doc] for doc in documents]
+                        print("files", files_material_list)
+                        print("success_info", success_info)
+                        print("table_df", table_df)
+                        print("documents", documents)
+                        st.session_state["file_chat_id"] = doc_id
+                        st.session_state["documents"] = documents
+                        st.success(success_info)
+                        st.session_state["df_upload"] = pd.DataFrame(table_df)
+
                     file_name = st.session_state["df_upload"]["文件名"].values.tolist()
                 # if selected_rows:
                 #     documents = [st.session_state["documents"][i] for i in selected_rows]
