@@ -1,84 +1,91 @@
 ## 指定制定列的csv文件加载器
 
-from langchain.document_loaders import CSVLoader
-import csv
-from io import TextIOWrapper
-from typing import Dict, List, Optional
-from langchain.docstore.document import Document
-from langchain.document_loaders.helpers import detect_file_encodings
+
+import zipfile
+import tarfile
+import py7zr
+import os
 
 
-class FilteredCSVLoader(CSVLoader):
-    def __init__(
-            self,
-            file_path: str,
-            columns_to_read: List[str],
-            source_column: Optional[str] = None,
-            metadata_columns: List[str] = [],
-            csv_args: Optional[Dict] = None,
-            encoding: Optional[str] = None,
-            autodetect_encoding: bool = False,
-    ):
-        super().__init__(
-            file_path=file_path,
-            source_column=source_column,
-            metadata_columns=metadata_columns,
-            csv_args=csv_args,
-            encoding=encoding,
-            autodetect_encoding=autodetect_encoding,
-        )
-        self.columns_to_read = columns_to_read
+class PKGFileLoader:
+    def __init__(self, file_path: str,extract_path: str ):
+        self.file_path = file_path
+        self.extract_path = extract_path
 
-    def load(self) -> List[Document]:
-        """Load data into document objects."""
+    import os
 
-        docs = []
+    def load(self, password=None) :
+        """
+        自动识别压缩包类型并解压
+        :param file_path: 压缩文件路径
+        :param extract_to: 解压目录（默认同文件名目录）
+        :param password: 密码（用于加密压缩包）
+        """
+        # if extract_to is None:
+        #     extract_to = os.path.splitext(self.file_path)[0]
+        # os.makedirs(extract_to, exist_ok=True)
+
+        ext = os.path.splitext(self.file_path)[-1].lower()
+        info = ""
         try:
-            with open(self.file_path, newline="", encoding=self.encoding) as csvfile:
-                docs = self.__read_file(csvfile)
-        except UnicodeDecodeError as e:
-            if self.autodetect_encoding:
-                detected_encodings = detect_file_encodings(self.file_path)
-                for encoding in detected_encodings:
-                    try:
-                        with open(
-                            self.file_path, newline="", encoding=encoding.encoding
-                        ) as csvfile:
-                            docs = self.__read_file(csvfile)
-                            break
-                    except UnicodeDecodeError:
-                        continue
+            if self.file_path.endswith('.zip'):
+                with zipfile.ZipFile(self.file_path, 'r') as z:
+                    if password:
+                        z.setpassword(password.encode())
+                    z.extractall(self.extract_path)
+                info += f"✅ ZIP 解压成功！"
+
+            elif self.file_path.endswith(('.tar.gz', '.tgz')):
+                with tarfile.open(self.file_path, 'r:gz') as t:
+                    t.extractall(self.extract_path)
+                info += f"✅ TAR.GZ 解压成功！"
+
+            elif self.file_path.endswith('.7z'):
+                with py7zr.SevenZipFile(self.file_path, mode='r', password=password) as z:
+                    z.extractall(self.extract_path)
+                info += f"✅ 7Z 解压成功！"
+
             else:
-                raise RuntimeError(f"Error loading {self.file_path}") from e
+                info += f"❌ 不支持的格式: {ext}"
+                os.rmdir(self.extract_path)
+                return info, []
+
+            info += f"📁 文件已解压到: {self.extract_path}"
+            folders, files_path, files = self.get_relative_paths(self.extract_path)
+            return info, [folders, files_path, files]
+
         except Exception as e:
-            raise RuntimeError(f"Error loading {self.file_path}") from e
+            info = f"❌ 解压失败 {self.file_path}: {str(e)}"
+            return info, []
 
-        return docs
+    def get_relative_paths(self, directory):
+        # 存储文件和文件夹的相对路径
+        files = []
+        folders = []
+        files_path = []
 
-    def __read_file(self, csvfile: TextIOWrapper) -> List[Document]:
-        docs = []
-        csv_reader = csv.DictReader(csvfile, **self.csv_args)  # type: ignore
-        for i, row in enumerate(csv_reader):
-            content = []
-            for col in self.columns_to_read:
-                if col in row:
-                    content.append(f'{col}:{str(row[col])}')
-                else:
-                    raise ValueError(f"Column '{self.columns_to_read[0]}' not found in CSV file.")
-            content = '\n'.join(content)
-            # Extract the source if available
-            source = (
-                row.get(self.source_column, None)
-                if self.source_column is not None
-                else self.file_path
-            )
-            metadata = {"source": source, "row": i}
+        # 遍历目录
+        for root, dirs, filenames in os.walk(directory):
+            # # 遍历文件夹
+            for dir_name in dirs:
+                # 获取文件夹的相对路径
+                relative_path = os.path.relpath(os.path.join(root, dir_name), directory)
+                folders.append(relative_path)
 
-            for col in self.metadata_columns:
-                if col in row:
-                    metadata[col] = row[col]
+            # 遍历文件
+            for filename in filenames:
+                # 获取文件的相对路径
+                relative_path = os.path.relpath(os.path.join(root, filename), directory)
+                files.append(relative_path.split("\\")[-1])
+                files_path.append(relative_path)
+        return folders, files_path, files
 
-            doc = Document(page_content=content, metadata=metadata)
-            docs.append(doc)
 
-        return docs
+if __name__ == '__main__':
+    # 示例调用
+    path = "D:/work/中台/中台安全运营工具/test/中台检查文档需求清单@充电桩场景精细化选址能力v1.zip"
+    # path = "D:/work/中台/中台安全运营工具/test/中台检查文档需求清单@充电桩场景精细化选址能力v1"
+    loader = PKGFileLoader(path)
+    info, files_path = loader.load()
+    print(info)
+    print("files_path", files_path)

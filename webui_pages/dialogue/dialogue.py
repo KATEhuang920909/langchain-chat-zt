@@ -4,14 +4,11 @@ from streamlit_chatbox import *
 from streamlit_modal import Modal
 from datetime import datetime
 import os
-import time
-import base64
-import io
 import re
 import time
 from configs import (TEMPERATURE, HISTORY_LEN, PROMPT_TEMPLATES, LLM_MODELS,
-                     DEFAULT_KNOWLEDGE_BASE, DEFAULT_SEARCH_ENGINE, SUPPORT_AGENT_MODEL, BM25_SEARCH_TOP_K)
-from server.knowledge_base.utils import LOADER_DICT, ZIP_DICT
+                     DEFAULT_KNOWLEDGE_BASE, BM25_SEARCH_TOP_K)
+from server.knowledge_base.utils import LOADER_DICT, PKG_DICT, LOG_DICT
 import uuid
 from typing import List, Dict
 import pandas as pd
@@ -99,13 +96,15 @@ def upload_temp_docs_v2(files, _api: ApiRequest) -> tuple:
     '''
     print("_api.upload_temp_docs_v2(files)", files)
     print("_api.upload_temp_docs_v2(files)", _api.upload_temp_docs_v2(files))
+
     data = _api.upload_temp_docs_v2(files).get("data", {})
     id, success_info, table_df, documents = data.get("id"), data.get("success_info"), data.get("table_df"), data.get(
         "documents")
     return id, success_info, table_df, documents
 
+
 @st.cache_data
-def upload_temp_zipfile(files, _api: ApiRequest) -> tuple:
+def upload_temp_pkgfile(files, _api: ApiRequest) -> tuple:
     '''
     将文件上传到临时目录，用于文件对话
     返回临时向量库ID
@@ -116,12 +115,13 @@ def upload_temp_zipfile(files, _api: ApiRequest) -> tuple:
               "documents": documents
               })
     '''
-    print("_api.upload_temp_zipfile(files)", files)
-    print("_api.upload_temp_zipfile(files)", _api.upload_temp_zipfile(files))
-    data = _api.upload_temp_zipfile(files).get("data", {})
+    print("_api.upload_temp_pkgfile(files)", files)
+    print("_api.upload_temp_pkgfile(files)", _api.upload_temp_pkgfile(files))
+    data = _api.upload_temp_pkgfile(files).get("data", {})
     id, success_info, table_df, documents = data.get("id"), data.get("success_info"), data.get("table_df"), data.get(
         "documents")
     return id, success_info, table_df, documents
+
 
 def parse_command(text: str, modal: Modal) -> bool:
     '''
@@ -276,7 +276,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
 
         index_prompt = {
             "LLM 对话": "llm_chat",
-            "材料匹配": "material_match",
+            "材料匹配": "llm_chat",
             "日志解析": "search_engine_chat",
             "知识库问答": "knowledge_base_chat",
             "文件对话": "knowledge_base_chat",
@@ -330,7 +330,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                                          )
 
                 kb_top_k = st.number_input("匹配知识条数：", 1, 20, BM25_SEARCH_TOP_K)
-
+                print("files", files)
                 ## Bge 模型会超过1
                 # score_threshold = st.slider("知识匹配分数阈值：", 0.0, 2.0, float(SCORE_THRESHOLD), 0.01)
                 upload_button = st.button("开始上传", disabled=len(files) == 0)
@@ -376,25 +376,25 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
             with st.expander("材料匹配配置", True):
                 files_material_list = st.file_uploader("请上传材料清单：",
                                                        [".docx", ".xlsx", ".xls", "txt"],
-                                                       accept_multiple_files=False,
+                                                       accept_multiple_files=True,
                                                        )
 
-                files_zip = st.file_uploader("请上传能力材料：",
-                                             [".zip", ".tar.gz", ".7z"],
-                                             accept_multiple_files=False,
-                                             )
-                upload_button = st.button("开始上传", disabled=(len(files_material_list) == 0 or len(files_zip) == 0))
+                pkg_file = st.file_uploader("请上传能力材料：",
+                                            [i for ls in PKG_DICT.values() for i in ls],
+                                            accept_multiple_files=True,
+                                            )
+                print("files_material_list", files_material_list)
+                print("pkg_file", pkg_file)
+                upload_button = st.button("开始上传", disabled=(len(files_material_list) != 1 or len(pkg_file) != 1))
 
                 if upload_button:
                     st.session_state.setdefault("documents", [])
-                    # st.session_state.setdefault("select_documents", [])
-                    # st.session_state.setdefault("selected_rows", [])
-                    #
+                    st.session_state.setdefault("pkg_file", [])
+
                     st.session_state.setdefault("df_upload", pd.DataFrame([], columns=["文件名"]))
 
-                    if len(files_material_list) != 0:
+                    if len(files_material_list) == 1:  # 清单解析
                         doc_id, success_info, table_df, documents = upload_temp_docs_v2(files_material_list, api)
-                        # documents = [[k["page_content"] for k in doc] for doc in documents]
                         print("files", files_material_list)
                         print("success_info", success_info)
                         print("table_df", table_df)
@@ -404,18 +404,20 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                         st.success(success_info)
                         st.session_state["df_upload"] = pd.DataFrame(table_df)
 
-                    if len(files_zip) != 0:
-                        doc_id, success_info, table_df, documents = upload_temp_docs_v2(files_zip, api)
+                    if len(pkg_file) == 1:  # 压缩包解析，程度为包内名称
+                        doc_id, success_info, table_df, documents = upload_temp_pkgfile(pkg_file, api)
                         # documents = [[k["page_content"] for k in doc] for doc in documents]
                         print("files", files_material_list)
                         print("success_info", success_info)
                         print("table_df", table_df)
                         print("documents", documents)
-                        st.session_state["file_chat_id"] = doc_id
-                        st.session_state["documents"] = documents
+                        st.session_state["pkg_file"] = documents
                         st.success(success_info)
-                        st.session_state["df_upload"] = pd.DataFrame(table_df)
-
+                        if len(st.session_state["df_upload"]) != 0:
+                            st.session_state["df_upload"] = pd.concat(
+                                [st.session_state["df_upload"], pd.DataFrame(table_df)],
+                                ignore_index=True
+                            )
                     file_name = st.session_state["df_upload"]["文件名"].values.tolist()
                 # if selected_rows:
                 #     documents = [st.session_state["documents"][i] for i in selected_rows]
@@ -427,18 +429,53 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
 
                     __ = [st.write(f"✅使用文档：{name}") for name in file_name]
         elif dialogue_mode == "日志解析":
-            search_engine_list = api.list_search_engines()
-            if DEFAULT_SEARCH_ENGINE in search_engine_list:
-                index = search_engine_list.index(DEFAULT_SEARCH_ENGINE)
-            else:
-                index = search_engine_list.index("duckduckgo") if "duckduckgo" in search_engine_list else 0
-            with st.expander("搜索引擎配置", True):
-                search_engine = st.selectbox(
-                    label="请选择搜索引擎",
-                    options=search_engine_list,
-                    index=index,
-                )
-                se_top_k = st.number_input("匹配搜索结果条数：", 1, 20, SEARCH_ENGINE_TOP_K)
+            with st.expander("日志解析配置", True):
+                files = st.file_uploader("上传日志：",
+                                         [i for ls in LOG_DICT.values() for i in ls],
+                                         accept_multiple_files=True,
+                                         )
+
+                print("files", files)
+                ## Bge 模型会超过1
+                # score_threshold = st.slider("知识匹配分数阈值：", 0.0, 2.0, float(SCORE_THRESHOLD), 0.01)
+                upload_button = st.button("开始上传", disabled=len(files) != 1)
+
+                if upload_button:
+                    st.session_state.setdefault("documents", [])
+                    # st.session_state.setdefault("select_documents", [])
+                    # st.session_state.setdefault("selected_rows", [])
+                    #
+                    st.session_state.setdefault("df_upload", pd.DataFrame([], columns=["文件名"]))
+
+                    if len(files) != 0:
+                        doc_id, success_info, table_df, documents = upload_temp_docs_v2(files, api)
+                        # documents = [[k["page_content"] for k in doc] for doc in documents]
+                        print("files", files)
+                        print("success_info", success_info)
+                        print("table_df", table_df)
+                        print("documents", documents)
+                        st.session_state["file_chat_id"] = doc_id
+                        st.session_state["documents"] = documents
+                        st.success(success_info)
+                        st.session_state["df_upload"] = pd.DataFrame(table_df)
+                    # selection = st.dataframe(st.session_state.df_upload,
+                    #                          use_container_width=True,
+                    #                          hide_index=True,
+                    #                          on_select="rerun",
+                    #                          selection_mode="multi-row",  # 允许多行选择
+                    #                          key="my_dataframe",
+                    #                          )
+                    # selected_rows = selection["selection"]["rows"]
+                    file_name = st.session_state["df_upload"]["文件名"].values.tolist()
+                # if selected_rows:
+                #     documents = [st.session_state["documents"][i] for i in selected_rows]
+                #     st.session_state["select_documents"] = documents
+                #     __ = [st.write(f"✅使用文档：{file_name[i]}") for i in selected_rows]
+
+                if upload_button:
+                    # st.session_state["select_documents"] = st.session_state["documents"]
+
+                    __ = [st.write(f"✅使用文档：{name}") for name in file_name]
 
     # Display chat messages from history on app rerun
     chat_box.output_messages()
@@ -472,6 +509,14 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                 chat_box.ai_say("正在思考...")
                 text = ""
                 message_id = ""
+
+                print("prompt", prompt,
+                      "history", history,
+                      "conversation_id", conversation_id,
+                      "llm_model", llm_model,
+                      "prompt_template_name", prompt_template_name,
+                      "temperature", temperature)
+
                 r = api.chat_chat(prompt,
                                   history=history,
                                   conversation_id=conversation_id,
@@ -495,86 +540,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                                        on_submit=on_feedback,
                                        kwargs={"message_id": message_id, "history_index": len(chat_box.history) - 1})
 
-            elif dialogue_mode == "材料匹配":
-                if not any(agent in llm_model for agent in SUPPORT_AGENT_MODEL):
-                    chat_box.ai_say([
-                        f"正在思考... \n\n <span style='color:red'>该模型并没有进行Agent对齐，请更换支持Agent的模型获得更好的体验！</span>\n\n\n",
-                        Markdown("...", in_expander=True, title="思考过程", state="complete"),
 
-                    ])
-                else:
-                    chat_box.ai_say([
-                        f"正在思考...",
-                        Markdown("...", in_expander=True, title="思考过程", state="complete"),
-
-                    ])
-                text = ""
-                ans = ""
-                if prompt.find("网页分析") != -1:
-                    time.sleep(3)
-                    text = '''
-这篇网页的主要内容是关于广州某科技公司遭受境外网络攻击的事件报道，以及公安机关对此事件的调查进展和相关分析。以下是主要内容的详细梳理：
-
-### 事件概述
-- **事件时间**：2025年5月20日
-- **事件地点**：广州市某科技公司
-- **事件性质**：境外黑客组织发起的网络攻击
-- **攻击目标**：该公司自助设备的后台系统
-
-### 攻击情况
-- **攻击手段**：攻击者利用技术手段绕过网络防护装置，非法进入后台系统，通过横向移动渗透控制多台网络设备，上传攻击程序。
-- **攻击后果**：导致公司官方网站和部分业务系统中断数小时，造成重大损失，部分用户隐私信息疑遭泄露。
-
-### 公安机关的行动
-- **立案调查**：广州市公安局天河区分局发布《警情通报》，立即开展立案调查。
-- **技术分析**：提取攻击程序样本，固定电子证据，开展技术溯源。
-- **初步判断**：攻击具有明显的政治背景，属于APT（高级持续性威胁）攻击，但攻击水平较低，属于APT组织中的二三线水平。
-- **线索追踪**：攻击过程中暴露出大量网络线索，公安机关正在进一步分析和调查。
-
-### 专家分析
-- **攻击特点**：具有高度定向性，属于APT攻击，攻击者长期使用开源工具扫描探测目标，寻找网络防护薄弱环节。
-- **应对能力**：我国在威胁发现、溯源、反制等方面已具备有效应对能力，能够锁定威胁来源。
-
-### 公众反应
-- **评论区**：网友对事件表示关注，呼吁加强网络安全保护，支持公安机关打击网络犯罪。
-
-### 公安机关提示
-- **举报权利**：公众有权依照《中华人民共和国网络安全法》向公安机关网安部门举报危害网络安全的行为。
-- **打击决心**：公安机关将依法坚决打击相关违法犯罪行为。
-
-### 其他信息
-- **类似案例**：近年来，公安机关已成功锁定并打击多起境外黑客组织对我国发起的网络攻击，如“西北工业大学遭网络攻击”和“武汉市地震监测中心遭网络攻击”。
-- **技术发展**：我国网络安全企业在攻击溯源能力上不断发展，从被动跟进到主动捕获，再到实现攻击溯源到达自然人的突破。
-
-### 总结
-该网页报道了一起境外黑客组织对广州某科技公司的网络攻击事件，强调了公安机关的快速响应和技术分析能力，以及我国在应对APT攻击方面的技术进步。同时，提醒公众关注网络安全，支持公安机关打击网络犯罪行为。
-                    '''
-                    ans = text
-                else:
-                    for d in api.agent_chat(prompt,
-                                            history=history,
-                                            model=llm_model,
-                                            prompt_name=prompt_template_name,
-                                            temperature=temperature,
-                                            ):
-                        try:
-                            d = json.loads(d)
-                        except:
-                            pass
-                        if error_msg := check_error_msg(d):  # check whether error occured
-                            st.error(error_msg)
-                        if chunk := d.get("answer"):
-                            text += chunk
-                            chat_box.update_msg(text, element_index=1)
-                        if chunk := d.get("final_answer"):
-                            ans += chunk
-                            chat_box.update_msg(ans, element_index=0)
-                        if chunk := d.get("tools"):
-                            text += "\n\n".join(d.get("tools", []))
-                            chat_box.update_msg(text, element_index=1)
-
-                chat_box.update_msg(ans, element_index=0, streaming=False)
-                chat_box.update_msg(text, element_index=1, streaming=False)
             elif dialogue_mode == "知识库问答":
                 chat_box.ai_say([
                     f"正在查询知识库 `{selected_kb}` ...",
@@ -628,44 +594,59 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                         chat_box.update_msg(text, element_index=0)
                 chat_box.update_msg(text, element_index=0, streaming=False)
                 chat_box.update_msg("\n\n".join(d.get("docs", [])), element_index=1, streaming=False)
-            elif dialogue_mode == "日志解析":
+
+            elif dialogue_mode == "材料匹配":
+                if st.session_state["file_chat_id"] is None:
+                    st.error("请先上传文件再进行对话")
+                    st.stop()
                 chat_box.ai_say([
-                    f"正在执行 `{search_engine}` 搜索...",
-                    Markdown("...", in_expander=True, title="网络搜索结果", state="complete"),
+                    f"正在配对文件 `{st.session_state['file_chat_id']}` ...",
+                    Markdown("...", in_expander=True, title="生成材料匹配报告", state="complete"),
                 ])
+
+                documents = st.session_state["documents"]
+                pkg_file = st.session_state["pkg_file"]
+                prompt0 = "分析【材料清单】和【待匹配清单】内容，分析内容为：有哪些文件出现在待匹配清单中，有哪些文件未出现在待匹配清单中\n"
+                prompt1 = f"【材料清单】如下：{'|'.join([d['page_content'] for d in documents[0]])}\n"
+                prompt2 = f"【待匹配清单】如下：{'|'.join([d for d in pkg_file[0][1]])}\n"
+                prompt = prompt0 + prompt1 + prompt2
+                print("prompt", prompt,
+                      "history", history,
+                      "conversation_id", conversation_id,
+                      "llm_model", llm_model,
+                      "prompt_template_name", prompt_template_name,
+                      "temperature", temperature)
+
                 text = ""
-                if prompt.find("最近有什么新的网络安全事件值得注意？") != -1:
-                    time.sleep(3)
-                    text = '''
-                            根据文中内容，最近的网络安全事件有以下几点：
-                            2024年4月，360数字安全集团联合中国国家计算机病毒应急处理中心首次对美国捏造的名为所谓“具有中国政府支持背景”的黑客组织“伏特台风”进行溯源，发现该组织并无表现出明确的国家背景黑客组织行为特征，而是与勒索病毒等网络犯罪团伙的关联程度明显。
-                            1月，世界经济论坛《2024年全球风险报告》发现，网络不安全是一种跨时间范围的全球风险，恶意软件、深度伪造和虚假信息等网络风险威胁着供应链、金融稳定和民主。
-                            10月，论坛《2024年全球网络安全展望》警告称，“网络犯罪分子所使用的相同攻击媒介仍在使用；然而，新技术为邪恶活动铺平了道路。 自那时起，我们看到虚假信息和深度伪造变得越来越普遍， 有时涉及知名人士并导致重大金融诈骗，而从奥运会到全球金融机构的一切都成为网络攻击的目标。”
-                            10月网络安全热点事件大盘点国内企业遭遇窃密木马钓鱼攻击，涉及敏感信息窃取与远控。
-                            2024年4月，360数字安全集团联合中国国家计算机病毒应急处理中心首次对美国捏造的名为所谓“具有中国政府支持背景”的黑客组织“伏特台风”进行溯源，发现该组织并无表现出明确的国家背景黑客组织行为特征，而是与勒索病毒等网络犯罪团伙的关联程度明显。
-                            1月，世界经济论坛《2024年全球风险报告》发现，网络不安全是一种跨时间范围的全球风险，恶意软件、深度伪造和虚假信息等网络风险威胁着供应链、金融稳定和民主。
-                            10月，论坛《2024年全球网络安全展望》警告称，“网络犯罪分子所使用的相同攻击媒介仍在使用；然而，新技术为邪恶活动铺平了道路。 自那时起，我们看到虚假信息和深度伪造变得越来越普遍， 有时涉及知名人士并导致重大金融诈骗，而从奥运会到全球金融机构的一切都成为网络攻击的目标。”
-                            10月网络安全热点事件大盘点国内企业遭遇窃密木马钓鱼攻击，涉及敏感信息窃取与远控。
-                            2024年4月，360数字安全集团联合中国国家计算机病毒应急处理中心首次对美国捏造的名为所谓“具有中国政府支持背景”的黑客组织“伏特台风”进行溯源，发现该组织并无表现出明确的国家背景黑客组织行为特征，而是与勒索病毒等网络犯罪团伙的关联程度明显。
-                            1月，世界经济论坛《2024年全球风险报告》发现，网络不安全是一种跨时间范围的全球风险，恶意软件、深度伪造和虚假信息等网络风险威胁着供应链、金融稳定和民主。
-                            这些事件都涉及网络安全问题，提醒人们要提高网络安全意识，加强网络安全防护措施，防范网络犯罪。'''
-                    chat_box.update_msg(text, element_index=0, streaming=True)
-                else:
-                    for d in api.search_engine_chat(prompt,
-                                                    search_engine_name=search_engine,
-                                                    top_k=se_top_k,
-                                                    history=history,
-                                                    model=llm_model,
-                                                    prompt_name=prompt_template_name,
-                                                    temperature=temperature,
-                                                    split_result=se_top_k > 1):
-                        if error_msg := check_error_msg(d):  # check whether error occured
-                            st.error(error_msg)
-                        elif chunk := d.get("answer"):
-                            text += chunk
-                            chat_box.update_msg(text, element_index=0)
-                    chat_box.update_msg(text, element_index=0, streaming=False)
-                    chat_box.update_msg("\n\n".join(d.get("docs", [])), element_index=1, streaming=False)
+                message_id = ""
+                r = api.chat_chat(prompt,
+                                  history=history,
+                                  conversation_id=conversation_id,
+                                  model=llm_model,
+                                  prompt_name=prompt_template_name,
+                                  temperature=temperature)
+                for t in r:
+                    if error_msg := check_error_msg(t):  # check whether error occured
+                        st.error(error_msg)
+                        break
+                    text += t.get("text", "")
+                    chat_box.update_msg(text)
+                    message_id = t.get("message_id", "")
+
+                metadata = {
+                    "message_id": message_id,
+                }
+                chat_box.update_msg(text, streaming=False, metadata=metadata)  # 更新最终的字符串，去除光标
+                chat_box.show_feedback(**feedback_kwargs,
+                                       key=message_id,
+                                       on_submit=on_feedback,
+                                       kwargs={"message_id": message_id, "history_index": len(chat_box.history) - 1})
+                chat_box.ai_say([
+                    f"配对完毕 ，请点击材料匹配报告"
+                ])
+
+            elif dialogue_mode == "日志解析":
+                pass
 
     if st.session_state.get("need_rerun"):
         st.session_state["need_rerun"] = False
@@ -673,7 +654,6 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
 
     now = datetime.now()
     with st.sidebar:
-
         cols = st.columns(2)
         export_btn = cols[0]
         if cols[1].button(

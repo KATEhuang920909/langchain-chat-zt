@@ -35,8 +35,8 @@ from collections import defaultdict
 #
 #         # st.session_state.processing = False
 #
-# if __name__ == '__main__':
-#     loader = Preprocess()
-#
-#     documents = loader.file_parse(file_path = r"D:\work\中台\中台安全运营工具\test\中台检查文档需求清单.docx")
-#     print(documents)
+if __name__ == '__main__':
+    loader = Docx2txtLoader(file_path = r"D:\work\中台\中台安全运营工具\test\中台检查文档需求清单.docx")
+
+    documents = loader.load()
+    print(documents)

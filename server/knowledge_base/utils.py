@@ -118,6 +118,7 @@ LOADER_DICT = {"UnstructuredHTMLLoader": ['.html', '.htm'],
 
                }
 PKG_DICT = {"PKGFileLoader": [".zip", ".tar.gz", ".7z"]}
+LOG_DICT = {"UnstructuredExcelLoader":  [".xlsx", ".xls", ".xlsd"],"CSVLoader": [".csv"],}
 SUPPORTED_EXTS = [ext for sublist in list(LOADER_DICT.values()) + list(PKG_DICT.values()) for ext in sublist]
 
 
@@ -149,6 +150,9 @@ def get_LoaderClass(file_extension):
     for LoaderClass, extensions in LOADER_DICT.items():
         if file_extension in extensions:
             return LoaderClass
+    for LoaderClass, extensions in PKG_DICT.items():
+        if file_extension in extensions:
+            return LoaderClass
 
 
 def get_loader(loader_name: str, file_path: str, loader_kwargs: Dict = None):
@@ -157,7 +161,7 @@ def get_loader(loader_name: str, file_path: str, loader_kwargs: Dict = None):
     '''
     loader_kwargs = loader_kwargs or {}
     try:
-        if loader_name in ["RapidOCRPDFLoader", "RapidOCRLoader", "FilteredCSVLoader","PKGFileLoader",
+        if loader_name in ["RapidOCRPDFLoader", "RapidOCRLoader", "FilteredCSVLoader", "PKGFileLoader",
                            "RapidOCRDocLoader", "RapidOCRPPTLoader", "PyPDFLoader", "Docx2txtLoader", "TextLoader"]:
             document_loaders_module = importlib.import_module('document_loaders')
         else:

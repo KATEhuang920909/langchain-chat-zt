@@ -101,3 +101,6 @@ async def chat(query: str = Body(..., description="用户输入", examples=["恼
         await task
 
     return EventSourceResponse(chat_iterator())
+
+
+

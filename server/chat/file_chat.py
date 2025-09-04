@@ -1,22 +1,24 @@
-from fastapi import Body, File, Form, UploadFile
-from sse_starlette.sse import EventSourceResponse
-from configs import (LLM_MODELS, VECTOR_SEARCH_TOP_K, BM25_SEARCH_TOP_K, SCORE_THRESHOLD, TEMPERATURE,
-                     CHUNK_SIZE, OVERLAP_SIZE, ZH_TITLE_ENHANCE)
-from server.utils import (wrap_done, get_ChatOpenAI,
-                          BaseResponse, get_prompt_template, get_temp_dir, run_in_thread_pool)
-from server.knowledge_base.kb_cache.faiss_cache import memo_faiss_pool
-from langchain.chains import LLMChain
-from langchain.callbacks import AsyncIteratorCallbackHandler
-from typing import AsyncIterable, List, Optional
 import asyncio
-from langchain.prompts.chat import ChatPromptTemplate
-from server.chat.utils import History
-from server.knowledge_base.kb_service.base import EmbeddingsFunAdapter
-from server.knowledge_base.utils import KnowledgeFile
-from server.knowledge_base.kb_service.bm25_service import BM25Service
 import json
 import os
+from typing import AsyncIterable, List, Optional, Any
+
 import pandas as pd
+from fastapi import Body, File, Form, UploadFile
+from langchain.callbacks import AsyncIteratorCallbackHandler
+from langchain.chains import LLMChain
+from langchain.prompts.chat import ChatPromptTemplate
+from sse_starlette.sse import EventSourceResponse
+
+from configs import (LLM_MODELS, VECTOR_SEARCH_TOP_K, BM25_SEARCH_TOP_K, SCORE_THRESHOLD, TEMPERATURE,
+                     CHUNK_SIZE, OVERLAP_SIZE, ZH_TITLE_ENHANCE)
+from server.chat.utils import History
+from server.knowledge_base.kb_cache.faiss_cache import memo_faiss_pool
+from server.knowledge_base.kb_service.base import EmbeddingsFunAdapter
+from server.knowledge_base.kb_service.bm25_service import BM25Service
+from server.knowledge_base.utils import KnowledgeFile
+from server.utils import (wrap_done, get_ChatOpenAI,
+                          BaseResponse, get_prompt_template, get_temp_dir, run_in_thread_pool)
 
 
 def _parse_files_in_thread(
@@ -52,6 +54,43 @@ def _parse_files_in_thread(
             return True, filename, f"成功上传文件 {filename}", docs
         except Exception as e:
             msg = f"{filename} 文件上传失败，报错信息为: {e}"
+            return False, filename, msg, []
+
+    params = [{"file": file} for file in files]
+    for result in run_in_thread_pool(parse_file, params=params):
+        yield result
+
+
+def _parse_pkg_in_thread(
+        files: List[Any],
+        dir: str,
+):
+    """
+    通过多线程将上传的文件保存到对应目录内。
+    生成器返回保存结果：[success or error, filename, msg, docs]
+    """
+
+    def parse_file(file):
+        '''
+        保存单个文件。
+        '''
+        try:
+            filename = file.filename
+            file_path = os.path.join(dir, filename)
+            file_content = file.file.read()  # 读取上传文件的内容
+
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.makedirs(os.path.dirname(file_path))
+            with open(file_path, "wb") as f:
+                f.write(file_content)
+
+            kb_file = KnowledgeFile(filename=filename, knowledge_base_name="temp")
+            kb_file.filepath = file_path
+            kb_file.loader_kwargs = {"extract_path": dir}
+            parse_info, pkg_info = kb_file.file2docs()
+            return True, filename, parse_info, pkg_info
+        except Exception as e:
+            msg = f"{filename} 文件解压失败，报错信息为: {e}"
             return False, filename, msg, []
 
     params = [{"file": file} for file in files]
@@ -140,13 +179,11 @@ def upload_temp_docs_v2(
               "table_df": new_df if documents_info else "",
               "documents": documents
               })
+
+
 def upload_temp_pkgfile(
         files: List[UploadFile] = File(..., description="上传文件，支持多文件"),
-        prev_id: str = Form(None, description="前知识库ID"),
-        chunk_size: int = Form(CHUNK_SIZE, description="知识库中单段文本最大长度"),
-        chunk_overlap: int = Form(OVERLAP_SIZE, description="知识库中相邻文本重合长度"),
-        zh_title_enhance: bool = Form(ZH_TITLE_ENHANCE, description="是否开启中文标题加强"),
-) -> BaseResponse:
+        prev_id: str = Form(None, description="前知识库ID")) -> BaseResponse:
     '''
     将文件保存到临时目录，并进行向量化。
     返回临时目录名称作为ID，同时也是临时向量库的ID。
@@ -160,11 +197,7 @@ def upload_temp_pkgfile(
     path, id = get_temp_dir(prev_id)
     # True, filename, f"成功上传文件 {filename}", docs
     # print("upload_temp_docs_v2_files", files)
-    for success, file, msg, docs in _parse_files_in_thread(files=files,
-                                                           dir=path,
-                                                           zh_title_enhance=zh_title_enhance,
-                                                           chunk_size=chunk_size,
-                                                           chunk_overlap=chunk_overlap):
+    for success, file, msg, docs in _parse_pkg_in_thread(files=files, dir=path):
         # if success:
         #     documents += docs
         # else:
@@ -189,6 +222,7 @@ def upload_temp_pkgfile(
               "table_df": new_df if documents_info else "",
               "documents": documents
               })
+
 
 async def file_chat(query: str = Body(..., description="用户输入", examples=["你好"]),
                     knowledge_id: str = Body(..., description="临时知识库ID"),

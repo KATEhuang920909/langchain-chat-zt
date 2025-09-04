@@ -451,9 +451,6 @@ class ApiRequest:
             self,
             files: List[Union[str, Path, bytes]],
             knowledge_id: str = None,
-            chunk_size=CHUNK_SIZE,
-            chunk_overlap=OVERLAP_SIZE,
-            zh_title_enhance=ZH_TITLE_ENHANCE,
     ):
         '''
         对应api.py/knowledge_base/upload_tmep_docs接口
@@ -470,14 +467,7 @@ class ApiRequest:
             return filename, file
 
         files = [convert_file(file) for file in files]
-        data = {
-            "knowledge_id": knowledge_id,
-            "chunk_size": chunk_size,
-            "chunk_overlap": chunk_overlap,
-            "zh_title_enhance": zh_title_enhance,
-        }
-        print("files__", files)
-        print("data__", data)
+        data = {"knowledge_id": knowledge_id}
         response = self.post(
             "/knowledge_base/upload_temp_pkgfile",
             data=data,
@@ -551,13 +541,13 @@ class ApiRequest:
             "prompt_name": prompt_name,
         }
 
-
         response = self.post(
             "/chat/file_chat_v2",
             json=data,
             stream=True,
         )
         return self._httpx_stream2generator(response, as_json=True)
+
 
     @deprecated(
         since="0.3.0",

@@ -26,8 +26,10 @@ PROMPT_TEMPLATES = {
             '<指令>请依赖自己的判断能力，简洁和专业的来回答问题。如果你不能肯定判断是涉诈短信，请说“根据已知信息无法回答该问题”，不允许在答案中添加编造成分，答案请使用中文。\n'
             '请严格按照规定进行输出，你的输出只能是：“是”, 或者 “根据已知信息无法回答该问题” ，不要出现任何其他不同的回答或字眼或符号<指令>\n'
             '{{ input }} \n',
+        "材料匹配":
+            '你是一个材料匹配小助手，请完成以下任务:\n'
+            '{{ input }}'
     },
-
 
     "knowledge_base_chat": {
         "安全运维":
@@ -59,7 +61,6 @@ PROMPT_TEMPLATES = {
 
     },
 
-
     "search_engine_chat": {
         "default":
             '<指令>这是我搜索到的互联网信息，请你根据这些信息进行提取并有调理，简洁的回答问题。'
@@ -72,7 +73,6 @@ PROMPT_TEMPLATES = {
             '<已知信息>{{ context }}</已知信息>\n'
             '<问题>{{ question }}</问题>\n',
     },
-
 
     "agent_chat": {
         "default":
@@ -92,7 +92,7 @@ PROMPT_TEMPLATES = {
             'history: {history}\n\n'
             'Question: {input}\n\n'
             'Thought: {agent_scratchpad}\n',
-        
+
         "网页分析":
             'Answer the following questions as best you can. If it is in order, you can use some tools appropriately. '
             'If you encounter problems analyzing web content, you can use tools to access web pages and retrieve their content.'
@@ -114,10 +114,4 @@ PROMPT_TEMPLATES = {
             'Please analyze and summarize the content of this webpage in detail, and then analyze whether it is related to telecommunications fraud.You can only answer in Chinese.\n',
 
     },
-    "material_match": {
-            "置空":  # 搜不到知识库的时候使用
-                '请你回答我的问题:\n'
-                '{{ question }}\n\n',
-
-        }
 }
