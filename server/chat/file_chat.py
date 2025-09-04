@@ -98,6 +98,41 @@ def _parse_pkg_in_thread(
         yield result
 
 
+def _parse_log_in_thread(
+        files: List[Any],
+        dir: str,
+):
+    """
+    通过多线程将上传的文件保存到对应目录内。
+    生成器返回保存结果：[success or error, filename, msg, docs]
+    """
+
+    def parse_file(file):
+        '''
+        保存单个文件。
+        '''
+        try:
+            filename = file.filename
+            file_path = os.path.join(dir, filename)
+            file_content = file.file.read()  # 读取上传文件的内容
+
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.makedirs(os.path.dirname(file_path))
+            with open(file_path, "wb") as f:
+                f.write(file_content)
+
+            kb_file = KnowledgeFile(filename=filename, knowledge_base_name="temp")
+            kb_file.filepath = file_path
+            parse_info, pkg_info = kb_file.file2dataframe()
+            return True, filename, parse_info, pkg_info
+        except Exception as e:
+            msg = f"{filename} 文件解压失败，报错信息为: {e}"
+            return False, filename, msg, []
+
+    params = [{"file": file} for file in files]
+    for result in run_in_thread_pool(parse_file, params=params):
+        yield result
+
 def upload_temp_docs(
         files: List[UploadFile] = File(..., description="上传文件，支持多文件"),
         prev_id: str = Form(None, description="前知识库ID"),
@@ -198,6 +233,49 @@ def upload_temp_pkgfile(
     # True, filename, f"成功上传文件 {filename}", docs
     # print("upload_temp_docs_v2_files", files)
     for success, file, msg, docs in _parse_pkg_in_thread(files=files, dir=path):
+        # if success:
+        #     documents += docs
+        # else:
+        #     failed_files.append({file: msg})
+
+        if success:
+            documents_info.append({'文件名': file})
+            documents.append(docs)
+            # documents.append(docs)
+        else:
+            failed_files.append({file: msg})
+
+    # with memo_faiss_pool.load_vector_store(id).acquire() as vs:
+    #     vs.add_documents(documents)
+    if documents_info:
+        new_df = pd.DataFrame(documents_info)
+        # st.success(f"✅ 成功添加 {len(documents_info)} 个文件")
+    return BaseResponse(
+        data={"id": id,
+              "failed_files": failed_files,
+              "success_info": f"成功添加 {len(documents_info)} 个文件",
+              "table_df": new_df if documents_info else "",
+              "documents": documents
+              })
+
+
+def upload_temp_logfile(
+        files: List[UploadFile] = File(..., description="上传文件，支持多文件"),
+        prev_id: str = Form(None, description="前知识库ID")) -> BaseResponse:
+    '''
+    将文件保存到临时目录，并进行向量化。
+    返回临时目录名称作为ID，同时也是临时向量库的ID。
+    '''
+    if prev_id is not None:
+        memo_faiss_pool.pop(prev_id)
+
+    failed_files = []
+    documents_info = []
+    documents = []
+    path, id = get_temp_dir(prev_id)
+    # True, filename, f"成功上传文件 {filename}", docs
+    # print("upload_temp_docs_v2_files", files)
+    for success, file, msg, docs in _parse_log_in_thread(files=files, dir=path):
         # if success:
         #     documents += docs
         # else:
@@ -363,7 +441,7 @@ async def file_chat_v2(query: str = Body(..., description="用户输入", exampl
         __ = [[doc_list.append(d) for d in doc] for doc in documents]
         bm25_model.calculate_idf()
         docs = bm25_model.search(query)
-        bm25_result = [doc_list[idx_score[0]] for idx_score in docs[:top_k] if idx_score[1] > 1]
+        bm25_result = [doc_list[idx_score[0]] for idx_score in docs[:top_k] if idx_score[1]]
         bm25_score = [idx_score for idx_score in docs[:top_k]]
         print("bm25_score", bm25_score)
         print("bm25_result", bm25_result)

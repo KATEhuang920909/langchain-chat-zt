@@ -1,4 +1,7 @@
 import os
+
+import pandas
+
 from configs import (
     KB_ROOT_PATH,
     CHUNK_SIZE,
@@ -17,6 +20,7 @@ from langchain.docstore.document import Document
 from langchain.text_splitter import TextSplitter
 from pathlib import Path
 from server.utils import run_in_thread_pool, get_model_worker_config
+from server.log_parse import EnterLog, OperationLog, UseLog
 import json
 from typing import List, Union, Dict, Tuple, Generator
 import chardet
@@ -118,7 +122,7 @@ LOADER_DICT = {"UnstructuredHTMLLoader": ['.html', '.htm'],
 
                }
 PKG_DICT = {"PKGFileLoader": [".zip", ".tar.gz", ".7z"]}
-LOG_DICT = {"UnstructuredExcelLoader":  [".xlsx", ".xls", ".xlsd"],"CSVLoader": [".csv"],}
+LOG_DICT = {"UnstructuredExcelLoader": [".xlsx", ".xls", ".xlsd"], "CSVLoader": [".csv"], }
 SUPPORTED_EXTS = [ext for sublist in list(LOADER_DICT.values()) + list(PKG_DICT.values()) for ext in sublist]
 
 
@@ -356,6 +360,28 @@ class KnowledgeFile:
                                                 chunk_overlap=chunk_overlap,
                                                 text_splitter=text_splitter)
         return self.splited_docs
+
+    def file2dataframe(self, refresh: bool = False):
+        if self.docs is None or refresh:
+            logger.info(f"pandas used for {self.filepath}")
+            if self.ext in ["xlsx", "xls"]:
+                data = pandas.read_excel(self.filepath)
+            elif self.ext == "csv":
+                data = pandas.read_csv(self.filepath)
+            if "操作日志" in self.filename:  # 主机操作日志
+                account_counts, daily_counts, operation_counts, account_daily_counts, error_login_counts, error_login_daily_counts = OperationLog(
+                    data)
+                return "操作日志", [account_counts, daily_counts, operation_counts, account_daily_counts,
+                                    error_login_counts, error_login_daily_counts]
+            elif "登录日志" in self.filename:  # 主机登录日志
+                login_counts, daily_counts, pivot_table, error_login_counts, error_pivot_table = EnterLog(data)
+                return "登录日志", [login_counts, daily_counts, pivot_table, error_login_counts, error_pivot_table]
+            elif "使用日志" in self.filename:  # 主机登录日志
+                login_id_counts, operation_counts, daily_counts, login_operation_counts, login_daily_counts, error_login_counts, error_login_daily_counts = UseLog(
+                    data)
+                return "使用日志", [login_id_counts, operation_counts, daily_counts, login_operation_counts,
+                                    login_daily_counts, error_login_counts, error_login_daily_counts]
+        return "", []
 
     def file_exist(self):
         return os.path.isfile(self.filepath)

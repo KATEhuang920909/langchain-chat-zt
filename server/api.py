@@ -116,11 +116,12 @@ def mount_app_routes(app: FastAPI, run_mode: str = None):
              )(list_search_engines)
 
     @app.post("/server/get_prompt_template",
-             tags=["Server State"],
-             summary="获取服务区配置的 prompt 模板")
+              tags=["Server State"],
+              summary="获取服务区配置的 prompt 模板")
     def get_server_prompt_template(
-        type: Literal["llm_chat", "knowledge_base_chat", "search_engine_chat", "agent_chat"]=Body("llm_chat", description="模板类型，可选值：llm_chat，knowledge_base_chat，search_engine_chat，agent_chat"),
-        name: str = Body("default", description="模板名称"),
+            type: Literal["llm_chat", "knowledge_base_chat", "search_engine_chat", "agent_chat"] = Body("llm_chat",
+                                                                                                        description="模板类型，可选值：llm_chat，knowledge_base_chat，search_engine_chat，agent_chat"),
+            name: str = Body("default", description="模板名称"),
     ) -> str:
         return get_prompt_template(type=type, name=name)
 
@@ -131,20 +132,22 @@ def mount_app_routes(app: FastAPI, run_mode: str = None):
              )(completion)
 
     app.post("/other/embed_texts",
-            tags=["Other"],
-            summary="将文本向量化，支持本地模型和在线模型",
-            )(embed_texts_endpoint)
+             tags=["Other"],
+             summary="将文本向量化，支持本地模型和在线模型",
+             )(embed_texts_endpoint)
 
 
 def mount_knowledge_routes(app: FastAPI):
     from server.chat.knowledge_base_chat import knowledge_base_chat
-    from server.chat.file_chat import upload_temp_docs,upload_temp_docs_v2, file_chat,file_chat_v2,upload_temp_pkgfile
+    from server.chat.file_chat import upload_temp_docs, upload_temp_docs_v2, file_chat, file_chat_v2, \
+        upload_temp_pkgfile, upload_temp_logfile
+
     from server.chat.agent_chat import agent_chat
     from server.knowledge_base.kb_api import list_kbs, create_kb, delete_kb
     from server.knowledge_base.kb_doc_api import (list_files, upload_docs, delete_docs,
-                                                update_docs, download_doc, recreate_vector_store,
-                                                search_docs, DocumentWithVSId, update_info,
-                                                update_docs_by_id,)
+                                                  update_docs, download_doc, recreate_vector_store,
+                                                  search_docs, DocumentWithVSId, update_info,
+                                                  update_docs_by_id, )
 
     app.post("/chat/knowledge_base_chat",
              tags=["Chat"],
@@ -200,7 +203,6 @@ def mount_knowledge_routes(app: FastAPI):
              summary="直接更新知识库文档"
              )(update_docs_by_id)
 
-
     app.post("/knowledge_base/upload_docs",
              tags=["Knowledge Base Management"],
              response_model=BaseResponse,
@@ -248,6 +250,10 @@ def mount_knowledge_routes(app: FastAPI):
              summary="上传压缩文件到临时目录，用于解压文件，材料匹配。"
              )(upload_temp_pkgfile)
 
+    app.post("/knowledge_base/upload_temp_logfile",
+             tags=["Knowledge Base Management"],
+             summary="上传压缩文件到临时目录，用于解压文件，材料匹配。"
+             )(upload_temp_logfile)
 
 
 def mount_filename_summary_routes(app: FastAPI):
@@ -267,7 +273,6 @@ def mount_filename_summary_routes(app: FastAPI):
              tags=["Knowledge kb_summary_api Management"],
              summary="重建单个知识库文件摘要"
              )(recreate_summary_vector_store)
-
 
 
 def run_api(host, port, **kwargs):
