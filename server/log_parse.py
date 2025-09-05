@@ -7,9 +7,6 @@
 -------------------------------------------------
 """
 import pandas as pd
-import matplotlib.pyplot as plt
-
-plt.rcParams["font.family"] = "FangSong"  # 仿宋
 
 
 def OperationLog(log_data):
@@ -24,50 +21,15 @@ def OperationLog(log_data):
     # 按主帐号名称分类统计
     account_counts = log_data['主帐号名称'].value_counts()
 
-    # # 数据可视化：主账号操作频率图
-    # plt.figure(figsize=(10, 6))
-    # account_counts.plot(kind='bar')
-    # plt.title('主账号操作频率图')
-    # plt.xlabel('主帐号名称')
-    # plt.ylabel('操作频率')
-    # plt.xticks(rotation=45)
-    # plt.show()
-
-    # 按操作时间分类统计
     log_data['日期'] = log_data['操作时间'].dt.date
     daily_counts = log_data.groupby('日期').size()
-
-    # # 数据可视化：时间序列图
-    # plt.figure(figsize=(10, 6))
-    # daily_counts.plot(kind='line', marker='o')
-    # plt.title('按天分组的操作记录数量')
-    # plt.xlabel('日期')
-    # plt.ylabel('操作记录数量')
-    # plt.grid(True)
-    # plt.show()
 
     # 按操作内容分类统计
     operation_counts = log_data['操作内容'].value_counts()
 
-    # # 数据可视化：操作内容频率图
-    # plt.figure(figsize=(10, 6))
-    # operation_counts.plot(kind='bar')
-    # plt.title('操作内容频率图')
-    # plt.xlabel('操作内容')
-    # plt.ylabel('频率')
-    # plt.xticks(rotation=45)
-    # plt.show()
-
     # 多维度组合分析：按主账号和操作时间分组
     account_daily_counts = log_data.groupby(['主帐号名称', '日期']).size().unstack(fill_value=0)
 
-    # # 数据可视化：多维度组合图
-    # plt.figure(figsize=(12, 8))
-    # sns.heatmap(account_daily_counts, cmap='viridis', annot=True, fmt='d')
-    # plt.title('按主账号和日期分组的操作记录数量')
-    # plt.xlabel('日期')
-    # plt.ylabel('主帐号名称')
-    # plt.show()
     error_time = log_data[((log_data['操作时间'].dt.hour >= 0) & (log_data['操作时间'].dt.hour < 6))]
 
     error_login_daily_counts = error_time.groupby(['主帐号名称', '日期']).size().unstack(fill_value=0)
@@ -91,49 +53,16 @@ def UseLog(log_data):
     # 按操作内容分类统计
     operation_counts = log_data['操作内容'].value_counts()
 
-    # # 数据可视化：操作内容频率图
-    # plt.figure(figsize=(10, 6))
-    # operation_counts.plot(kind='bar')
-    # plt.title('操作内容频率图')
-    # plt.xlabel('操作内容')
-    # plt.ylabel('频率')
-    # plt.xticks(rotation=45)
-    # plt.show()
-
     # 按访问时间分类统计
     log_data['日期'] = log_data['访问时间'].dt.date
     daily_counts = log_data.groupby('日期').size()
 
-    # # 数据可视化：时间序列图
-    # plt.figure(figsize=(10, 6))
-    # daily_counts.plot(kind='line', marker='o')
-    # plt.title('按天分组的操作记录数量')
-    # plt.xlabel('日期')
-    # plt.ylabel('操作记录数量')
-    # plt.grid(True)
-    # plt.show()
-
     # 多维度组合分析：按登录ID和操作内容分组
     login_operation_counts = log_data.groupby(['登录ID', '操作内容']).size().unstack(fill_value=0)
-
-    # 数据可视化：多维度组合图
-    # plt.figure(figsize=(12, 8))
-    # sns.heatmap(login_operation_counts, cmap='viridis', annot=True, fmt='d')
-    # plt.title('按登录ID和操作内容分组的操作记录数量')
-    # plt.xlabel('操作内容')
-    # plt.ylabel('登录ID')
-    # plt.show()
 
     # 多维度组合分析：按登录ID和日期分组
     login_daily_counts = log_data.groupby(['登录ID', '日期']).size().unstack(fill_value=0)
 
-    # # 数据可视化：多维度组合图
-    # plt.figure(figsize=(12, 8))
-    # sns.heatmap(login_daily_counts, cmap='viridis', annot=True, fmt='d')
-    # plt.title('按登录ID和日期分组的操作记录数量')
-    # plt.xlabel('日期')
-    # plt.ylabel('登录ID')
-    # plt.show()
     error_time = log_data[(log_data['访问时间'].dt.hour >= 0) & (log_data['访问时间'].dt.hour < 6)]
 
     error_login_daily_counts = error_time.groupby(['登录ID', '日期']).size().unstack(fill_value=0)
@@ -153,26 +82,11 @@ def EnterLog(log_data):
     log_data = log_data.dropna(subset=['登录时间', '登出时间'])
     # 数据可视化：登录ID登录频率图
     login_counts = log_data['登录ID'].value_counts()[:30]
-    # plt.figure(figsize=(10, 6))
-    # login_counts.plot(kind='bar')
-    # plt.title('登录ID登录频率图')
-    # plt.xlabel('登录ID')
-    # plt.ylabel('登录频率')
-    # plt.xticks(rotation=45)
-    # plt.show()
 
     # 按登录时间分类统计
     log_data['日期'] = log_data['登录时间'].dt.date
     daily_counts = log_data.groupby('日期').size()
 
-    # # 数据可视化：时间序列图
-    # plt.figure(figsize=(10, 6))
-    # daily_counts.plot(kind='line', marker='o')
-    # plt.title('按天分组的登录记录数量')
-    # plt.xlabel('日期')
-    # plt.ylabel('登录记录数量')
-    # plt.grid(True)
-    # plt.show()
     # 每个登录ID在一天之内的登录次数排序
     log_data = log_data[['登录ID', '登录时间']]
 
@@ -191,17 +105,12 @@ def EnterLog(log_data):
     pivot_table = sorted_daily_login_counts[:30].pivot(index='登录ID', columns='日期', values='登录次数')
 
     pivot_table.fillna(0, inplace=True)
-    # 数据可视化：多维度组合图
-    # plt.figure(figsize=(12, 6))
-    # sns.heatmap(pivot_table, cmap='viridis', annot=True, fmt='.0f')
-    # plt.title('按登录ID和日期分组的操作记录数量')
-    # plt.xlabel('日期')
-    # plt.ylabel('登录ID')
-    # plt.show()
+
     error_time = log_data[(log_data['登录时间'].dt.hour >= 0) & (log_data['登录时间'].dt.hour < 6)]
     error_daily_login_counts = error_time.groupby(['登录ID', '日期']).size().reset_index(name='登录次数')
     error_sorted_daily_login_counts = error_daily_login_counts.sort_values(by='登录次数', ascending=False)
-    error_pivot_table = error_sorted_daily_login_counts[:30].pivot(index='登录ID', columns='日期', values='登录次数')
+    error_pivot_table = error_sorted_daily_login_counts[:30].pivot(index='登录ID', columns='日期',
+                                                                   values='登录次数').fillna(0)
 
     error_login_counts = error_time['登录ID'].value_counts()
 

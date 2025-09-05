@@ -135,10 +135,9 @@ def upload_temp_logfile(files, _api: ApiRequest) -> tuple:
               "documents": documents
               })
     '''
-    print("_api.upload_temp_docs_v2(files)", files)
-    print("_api.upload_temp_docs_v2(files)", _api.upload_temp_logfile(files))
 
-    data = _api.upload_temp_docs_v2(files).get("data", {})
+    data = _api.upload_temp_logfile(files).get("data", {})
+    print("_api.upload_temp_logfile(files)", data)
     id, success_info, table_df, documents = data.get("id"), data.get("success_info"), data.get("table_df"), data.get(
         "documents")
     return id, success_info, table_df, documents
@@ -346,7 +345,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
 
             with st.expander("文件对话配置", True):
                 files = st.file_uploader("上传知识文件：",
-                                         [i for ls in LOADER_DICT.values() for i in ls],
+                                         [i for ls in LOADER_DICT.values() for i in ls if i != '.doc'],
                                          accept_multiple_files=True,
                                          )
 
@@ -665,534 +664,123 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                     f"配对完毕 ，请点击材料匹配报告"
                 ])
 
-            # elif dialogue_mode == "日志解析":
-            #     if file_name == "操作日志":
-            #         account_counts, daily_counts, operation_counts, account_daily_counts, error_login_counts, error_login_daily_counts = \
-            #             st.session_state["documents"]
-            #         # ==================================================================================================
-            #         # 数据可视化：主账号操作频率图
-            #         st.markdown(" **【主账号操作频率分析】** ")
-            #         response_placeholder = st.empty()
-            #
-            #         # st.markdown("解析报告：")
-            #         msg = [{"role": "system",
-            #                 "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                ] + [{"role": "user", "content": "请分析主账号操作频率,50字，参考资料如下：" + "||"
-            #                                                 + str(
-            #             account_counts.to_dict()) + "其中key为主账号名称，value为操作频率"}]
-            #
-            #         full_response = ""
-            #         response = client.chat.completions.create(
-            #             model=model_name,  # 请填写您要调用的模型名称
-            #             messages=msg,
-            #             stream=True,
-            #             max_tokens=4096,
-            #             temperature=0.8,
-            #             extra_headers=llm_headers
-            #
-            #         )
-            #         # print(response)
-            #         for chunk in response:
-            #             cont = chunk.choices[0].delta.content
-            #             full_response += cont
-            #             # print(cont)
-            #             response_placeholder.markdown(full_response + "▌")
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：按操作时间分类统计
-            #         st.markdown(" **【按操作时间分类统计】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         msg = [{"role": "system",
-            #                 "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                ] + [{"role": "user", "content": "请分析操作时间,50字，参考资料如下：" + "||"
-            #                                                 + str(
-            #             daily_counts.to_dict()) + "其中key为日期，value为操作频率"}]
-            #         response = client.chat.completions.create(
-            #             model=model_name,  # 请填写您要调用的模型名称
-            #             messages=msg,
-            #             stream=True,
-            #             max_tokens=4096,
-            #             temperature=0.8,
-            #             extra_headers=llm_headers
-            #         )
-            #         # print(response)
-            #         for chunk in response:
-            #             cont = chunk.choices[0].delta.content
-            #             full_response += cont
-            #             # print(cont)
-            #             response_placeholder.markdown(full_response + "▌")
-            #         # response_placeholder.markdown(full_response)
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：按操作内容统计
-            #         st.markdown(" **【按操作内容统计】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         msg = [{"role": "system",
-            #                 "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                ] + [{"role": "user", "content": "请分析操作内容,50字，参考资料如下：" + "||"
-            #                                                 + str(
-            #             operation_counts.to_dict()) + "其中key为操作内容，value为操作频率"}]
-            #         response = client.chat.completions.create(
-            #             model=model_name,  # 请填写您要调用的模型名称
-            #             messages=msg,
-            #             stream=True,
-            #             max_tokens=4096,
-            #             temperature=0.8,
-            #             extra_headers=llm_headers
-            #         )
-            #         # print(response)
-            #         for chunk in response:
-            #             cont = chunk.choices[0].delta.content
-            #             full_response += cont
-            #             # print(cont)
-            #             response_placeholder.markdown(full_response + "▌")
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：多维度组合分析：按主账号和操作时间分组
-            #         st.markdown(" **【按主账号和操作时间分组统计】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         msg = [{"role": "system",
-            #                 "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                ] + [{"role": "user", "content": "请分析操作内容,50字，参考资料如下：" + "||"
-            #                                                 + str(
-            #             account_daily_counts.to_dict()) + "其中key为日期和主账号名称，value为操作频率"}]
-            #         response = client.chat.completions.create(
-            #             model=model_name,  # 请填写您要调用的模型名称
-            #             messages=msg,
-            #             stream=True,
-            #             max_tokens=4096,
-            #             temperature=0.8,
-            #             extra_headers=llm_headers
-            #         )
-            #         # print(response)
-            #         for chunk in response:
-            #             cont = chunk.choices[0].delta.content
-            #             full_response += cont
-            #             # print(cont)
-            #             response_placeholder.markdown(full_response + "▌")
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：异常时间主账号操作频率图
-            #         st.markdown(" **【异常时间段主账号操作频率分析】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         if len(error_login_counts) != 0:
-            #             msg = [{"role": "system",
-            #                     "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                    ] + [{"role": "user",
-            #                          "content": "请分析异常时间点0~6点主账号操作频率,50字，参考资料如下：" + "||"
-            #                                     + str(
-            #                              error_login_counts.to_dict()) + "||其中key为主账号名称，value为操作频率"}]
-            #             response = client.chat.completions.create(
-            #                 model=model_name,  # 请填写您要调用的模型名称
-            #                 messages=msg,
-            #                 stream=True,
-            #                 max_tokens=4096,
-            #                 temperature=0.8,
-            #                 extra_headers=llm_headers
-            #             )
-            #             # print(response)
-            #             for chunk in response:
-            #                 cont = chunk.choices[0].delta.content
-            #                 full_response += cont
-            #                 # print(cont)
-            #                 response_placeholder.markdown(full_response + "▌")
-            #             # response_placeholder.markdown(full_response)
-            #
-            #             # st.markdown(pd.DataFrame(error_login_counts).reset_index())
-            #         else:
-            #             st.markdown("无异常时间段操作记录")
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：异常时间主账号时间操作频率图
-            #         st.markdown(" **【异常时间段主账号日期维度的操作频率分析】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         if len(error_login_daily_counts) != 0:
-            #             msg = [{"role": "system",
-            #                     "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                    ] + [{"role": "user",
-            #                          "content": "请分析异常时间点0~6点主账号基于日期维度的操作频率,50字，参考资料如下：" + "||"
-            #                                     + str(
-            #                              error_login_daily_counts.to_dict()) + "其中key为日期和主账号名称，value为操作频率"}]
-            #             response = client.chat.completions.create(
-            #                 model=model_name,  # 请填写您要调用的模型名称
-            #                 messages=msg,
-            #                 stream=True,
-            #                 max_tokens=4096,
-            #                 temperature=0.8,
-            #                 extra_headers=llm_headers
-            #             )
-            #             # print(response)
-            #             for chunk in response:
-            #                 cont = chunk.choices[0].delta.content
-            #                 full_response += cont
-            #                 # print(cont)
-            #                 response_placeholder.markdown(full_response + "▌")
-            #                 # response_placeholder.markdown(full_response)
-            #
-            #                 # st.markdown(pd.DataFrame(error_login_daily_counts).reset_index())
-            #         else:
-            #             st.markdown("无异常时间段操作记录")
-            #
-            #     if match_info[0] == "登录日志":
-            #         login_counts, daily_counts, pivot_table, error_login_counts, error_pivot_table = match_info[1]
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：主账号操作频率图
-            #         st.markdown(" **【ID登录频率分析】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         msg = [{"role": "system",
-            #                 "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                ] + [{"role": "user", "content": "请分析主账号操作频率,50字，参考资料如下：" + "||"
-            #                                                 + str(
-            #             login_counts.to_dict()) + "其中key为登录ID名称，value为登录频率"}]
-            #         response = client.chat.completions.create(
-            #             model=model_name,  # 请填写您要调用的模型名称
-            #             messages=msg,
-            #             stream=True,
-            #             max_tokens=4096,
-            #             temperature=0.8,
-            #             extra_headers=llm_headers
-            #         )
-            #         # print(response)
-            #         for chunk in response:
-            #             cont = chunk.choices[0].delta.content
-            #             full_response += cont
-            #             # print(cont)
-            #             response_placeholder.markdown(full_response + "▌")
-            #         # response_placeholder.markdown(full_response)
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：主账号操作频率图
-            #         st.markdown(" **【按登录时间分类统计】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         msg = [{"role": "system",
-            #                 "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                ] + [{"role": "user", "content": "请分析基于登陆时间的频率,50字，参考资料如下：" + "||"
-            #                                                 + str(
-            #             daily_counts.to_dict()) + "其中key为日期，value为登录频率"}]
-            #         response = client.chat.completions.create(
-            #             model=model_name,  # 请填写您要调用的模型名称
-            #             messages=msg,
-            #             stream=True,
-            #             max_tokens=4096,
-            #             temperature=0.8,
-            #             extra_headers=llm_headers
-            #         )
-            #         # print(response)
-            #         for chunk in response:
-            #             cont = chunk.choices[0].delta.content
-            #             full_response += cont
-            #             # print(cont)
-            #             response_placeholder.markdown(full_response + "▌")
-            #         # response_placeholder.markdown(full_response)
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：主账号操作频率图
-            #         st.markdown(" **【按登录ID和日期分组记录数量】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         msg = [{"role": "system",
-            #                 "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                ] + [{"role": "user", "content": "请分析主账号操作频率,50字，参考资料如下：" + "||"
-            #                                                 + str(
-            #             pivot_table.to_dict()) + "其中key为日期和登录ID，value为登录频率"}]
-            #         response = client.chat.completions.create(
-            #             model=model_name,  # 请填写您要调用的模型名称
-            #             messages=msg,
-            #             stream=True,
-            #             max_tokens=4096,
-            #             temperature=0.8,
-            #             extra_headers=llm_headers
-            #         )
-            #         # print(response)
-            #         for chunk in response:
-            #             cont = chunk.choices[0].delta.content
-            #             full_response += cont
-            #             # print(cont)
-            #             response_placeholder.markdown(full_response + "▌")
-            #         # response_placeholder.markdown(full_response)
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：异常时间主账号登录频率图
-            #         st.markdown(" **【异常时间段主账号登录频率分析】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         if len(error_login_counts) != 0:
-            #             msg = [{"role": "system",
-            #                     "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                    ] + [{"role": "user",
-            #                          "content": "请分析异常时间点0~6点主账号登录频率,50字，参考资料如下：" + "||"
-            #                                     + str(
-            #                              error_login_counts.to_dict()) + "其中key为主账号名称，value为操作频率"}]
-            #             response = client.chat.completions.create(
-            #                 model=model_name,  # 请填写您要调用的模型名称
-            #                 messages=msg,
-            #                 stream=True,
-            #                 max_tokens=4096,
-            #                 temperature=0.8,
-            #                 extra_headers=llm_headers
-            #             )
-            #             # print(response)
-            #             for chunk in response:
-            #                 cont = chunk.choices[0].delta.content
-            #                 full_response += cont
-            #                 # print(cont)
-            #                 response_placeholder.markdown(full_response + "▌")
-            #             # response_placeholder.markdown(full_response)
-            #
-            #             # st.markdown(pd.DataFrame(error_login_counts).reset_index())
-            #         else:
-            #             st.markdown("无异常时间段登录记录")
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：异常时间主账号时间登录频率图
-            #         st.markdown(" **【异常时间段主账号日期维度的登录频率分析】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         if len(error_pivot_table) != 0:
-            #             msg = [{"role": "system",
-            #                     "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                    ] + [{"role": "user",
-            #                          "content": "请分析异常时间点0~6点主账号基于日期维度的登录频率,50字，参考资料如下：" + "||"
-            #                                     + str(
-            #                              error_pivot_table.to_dict()) + "其中key为日期和主账号名称，value为登录频率"}]
-            #             response = client.chat.completions.create(
-            #                 model=model_name,  # 请填写您要调用的模型名称
-            #                 messages=msg,
-            #                 stream=True,
-            #                 max_tokens=4096,
-            #                 temperature=0.8,
-            #                 extra_headers=llm_headers
-            #             )
-            #             # print(response)
-            #             for chunk in response:
-            #                 cont = chunk.choices[0].delta.content
-            #                 full_response += cont
-            #                 # print(cont)
-            #                 response_placeholder.markdown(full_response + "▌")
-            #
-            #             # st.markdown(pd.DataFrame(error_pivot_table).reset_index())
-            #         else:
-            #             st.markdown("无异常时间段登录记录")
-            #     if match_info[0] == "使用日志":
-            #         login_id_counts, operation_counts, daily_counts, login_operation_counts, login_daily_counts, error_login_counts, error_login_daily_counts = \
-            #             match_info[1]
-            #         # ==================================================================================================
-            #         # 数据可视化：登录ID使用频率图
-            #         st.markdown(" **【登录ID使用频率图】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         msg = [{"role": "system",
-            #                 "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                ] + [{"role": "user", "content": "请分析主账号使用频率,50字，参考资料如下：" + "||"
-            #                                                 + str(
-            #             login_id_counts.to_dict()) + "其中key为登录ID，value为使用频率"}]
-            #         response = client.chat.completions.create(
-            #             model=model_name,  # 请填写您要调用的模型名称
-            #             messages=msg,
-            #             stream=True,
-            #             max_tokens=4096,
-            #             temperature=0.8,
-            #             extra_headers=llm_headers
-            #         )
-            #         # print(response)
-            #         for chunk in response:
-            #             cont = chunk.choices[0].delta.content
-            #             full_response += cont
-            #             # print(cont)
-            #             response_placeholder.markdown(full_response + "▌")
-            #         # response_placeholder.markdown(full_response)
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：操作内容频率图
-            #         st.markdown(" **【操作内容使用频率图】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         msg = [{"role": "system",
-            #                 "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                ] + [{"role": "user", "content": "请分析基于操作内容的使用频率,50字，参考资料如下：" + "||"
-            #                                                 + str(
-            #             operation_counts.to_dict()) + "其中key为操作内容，value为使用频率"}]
-            #         response = client.chat.completions.create(
-            #             model=model_name,  # 请填写您要调用的模型名称
-            #             messages=msg,
-            #             stream=True,
-            #             max_tokens=4096,
-            #             temperature=0.8,
-            #             extra_headers=llm_headers
-            #         )
-            #         # print(response)
-            #         for chunk in response:
-            #             cont = chunk.choices[0].delta.content
-            #             full_response += cont
-            #             # print(cont)
-            #             response_placeholder.markdown(full_response + "▌")
-            #         # response_placeholder.markdown(full_response)
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：按访问时间分类统计
-            #         st.markdown(" **【按访问时间分类统计】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         msg = [{"role": "system",
-            #                 "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                ] + [{"role": "user", "content": "请分析基于访问时间的使用频率,50字，参考资料如下：" + "||"
-            #                                                 + str(
-            #             daily_counts.to_dict()) + "其中key为访问时间，value为使用频率"}]
-            #         response = client.chat.completions.create(
-            #             model=model_name,  # 请填写您要调用的模型名称
-            #             messages=msg,
-            #             stream=True,
-            #             max_tokens=4096,
-            #             temperature=0.8,
-            #             extra_headers=llm_headers
-            #         )
-            #         # print(response)
-            #         for chunk in response:
-            #             cont = chunk.choices[0].delta.content
-            #             full_response += cont
-            #             # print(cont)
-            #             response_placeholder.markdown(full_response + "▌")
-            #         # response_placeholder.markdown(full_response)
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：按登录ID和操作内容分组统计
-            #         st.markdown(" **【按登录ID和操作内容分组统计】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         msg = [{"role": "system",
-            #                 "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                ] + [{"role": "user", "content": "请分析登录ID和操作内容的使用频率,50字，参考资料如下：" + "||"
-            #                                                 + str(
-            #             login_operation_counts.to_dict()) + "其中key为操作内容和登录ID，value为使用频率"}]
-            #         response = client.chat.completions.create(
-            #             model=model_name,  # 请填写您要调用的模型名称
-            #             messages=msg,
-            #             stream=True,
-            #             max_tokens=4096,
-            #             temperature=0.8,
-            #             extra_headers=llm_headers
-            #         )
-            #         # print(response)
-            #         for chunk in response:
-            #             cont = chunk.choices[0].delta.content
-            #             full_response += cont
-            #             # print(cont)
-            #             response_placeholder.markdown(full_response + "▌")
-            #         # response_placeholder.markdown(full_response)
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：按登录ID和日期分组统计
-            #         st.markdown(" **【按登录ID和日期分组统计】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         msg = [{"role": "system",
-            #                 "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                ] + [{"role": "user", "content": "请分析几月登录ID和日期的使用频率,50字，参考资料如下：" + "||"
-            #                                                 + str(
-            #             login_daily_counts.to_dict()) + "其中key为操作日期和登录ID，value为使用频率"}]
-            #         response = client.chat.completions.create(
-            #             model=model_name,  # 请填写您要调用的模型名称
-            #             messages=msg,
-            #             stream=True,
-            #             max_tokens=4096,
-            #             temperature=0.8,
-            #             extra_headers=llm_headers
-            #         )
-            #         # print(response)
-            #         for chunk in response:
-            #             cont = chunk.choices[0].delta.content
-            #             full_response += cont
-            #             # print(cont)
-            #             response_placeholder.markdown(full_response + "▌")
-            #         # response_placeholder.markdown(full_response)
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：异常时间主账号使用频率图
-            #         st.markdown(" **【异常时间段主账号使用频率分析】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         if len(error_login_counts) != 0:
-            #             msg = [{"role": "system",
-            #                     "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                    ] + [{"role": "user",
-            #                          "content": "请分析异常时间点0~6点主账号使用频率,50字，参考资料如下：" + "||"
-            #                                     + str(
-            #                              error_login_counts.to_dict()) + "其中key为登录ID名称，value为操作频率"}]
-            #             response = client.chat.completions.create(
-            #                 model=model_name,  # 请填写您要调用的模型名称
-            #                 messages=msg,
-            #                 stream=True,
-            #                 max_tokens=4096,
-            #                 temperature=0.8,
-            #                 extra_headers=llm_headers
-            #             )
-            #             # print(response)
-            #             for chunk in response:
-            #                 cont = chunk.choices[0].delta.content
-            #                 full_response += cont
-            #                 # print(cont)
-            #                 response_placeholder.markdown(full_response + "▌")
-            #             # response_placeholder.markdown(full_response)
-            #
-            #             # st.markdown(pd.DataFrame(error_login_counts).reset_index())
-            #         else:
-            #             st.markdown("无异常时间段使用记录")
-            #
-            #         # ==================================================================================================
-            #         # 数据可视化：异常时间主账号时间登录频率图
-            #         st.markdown(" **【异常时间段主账号日期维度的使用频率分析】** ")
-            #         response_placeholder = st.empty()
-            #         full_response = ""
-            #         # st.markdown("解析报告：")
-            #         if len(error_login_daily_counts) != 0:
-            #             msg = [{"role": "system",
-            #                     "content": "你是一个乐于回答各种问题的小助手，你的任务是提供专业、准确、有洞察力的建议。"}
-            #                    ] + [{"role": "user",
-            #                          "content": "请分析异常时间点0~6点主账号基于日期维度的使用频率,50字，参考资料如下：" + "||"
-            #                                     + str(
-            #                              error_login_daily_counts.to_dict()) + "其中key为日期和登录ID，value为登录频率"}]
-            #             response = client.chat.completions.create(
-            #                 model=model_name,  # 请填写您要调用的模型名称
-            #                 messages=msg,
-            #                 stream=True,
-            #                 max_tokens=4096,
-            #                 temperature=0.8,
-            #                 extra_headers=llm_headers
-            #             )
-            #             # print(response)
-            #             for chunk in response:
-            #                 cont = chunk.choices[0].delta.content
-            #                 full_response += cont
-            #                 # print(cont)
-            #                 response_placeholder.markdown(full_response + "▌")
-            #             # response_placeholder.markdown(full_response)
-            #             # st.markdown(pd.DataFrame(error_login_daily_counts).reset_index())
-            #         else:
-            #             st.markdown("无异常时间段使用记录")
+            elif dialogue_mode == "日志解析":
+                if st.session_state["file_chat_id"] is None:
+                    st.error("请先上传文件再进行对话")
+                    st.stop()
+                chat_box.ai_say([
+                    f"正在进行日志解析 `{st.session_state['file_chat_id']}` ...",
+                    Markdown("...", in_expander=True, title="生成日志解析报告", state="complete"),
+                ])
+                prompt_list = []
+                file_name = "".join(st.session_state["df_upload"]["文件名"].values.tolist())
+                if "操作日志" in file_name:
+                    account_counts, daily_counts, operation_counts, account_daily_counts, error_login_counts, error_login_daily_counts = \
+                        st.session_state["documents"][0]
+                    prompt1 = f"【主账号操作频率分析】:{str(account_counts)},其中key为主账号名称，value为操作频率"
+                    prompt2 = f"【按操作时间分类统计】:{str(daily_counts)},其中其中key为日期，value为操作频率"
+                    prompt3 = f"【主账号操作内容统计】:{str(operation_counts)},其中key为操作内容，value为操作频率"
+                    prompt4 = f"【按主账号和操作时间分组统计】:{str(account_daily_counts)},其中key为日期和主账号名称，value为操作频率"
+                    prompt5 = f"【异常时间段主账号操作频率分析】:{str(account_daily_counts)},请分析异常时间点0~6点主账号操作频率，其中key为主账号名称，value为操作频率，如果统计结果为空，请直接返回：无异常时间段操作记录。"
+                    prompt6 = f"【异常时间段主账号日期维度的操作频率分析】:{str(error_login_daily_counts)},请分析异常时间点0~6点主账号基于日期维度的操作频率，其中key为操作内容，value为操作频率，如果统计结果为空，请直接返回：无异常时间段操作记录（日期维度）。"
+                    if len(prompt1) < 2048:
+                        prompt_list.append(prompt1)
+                    if len(prompt2) < 2048:
+                        prompt_list.append(prompt2)
+                    if len(prompt3) < 2048:
+                        prompt_list.append(prompt3)
+                    if len(prompt4) < 2048:
+                        prompt_list.append(prompt4)
+                    if len(prompt5) < 2048:
+                        prompt_list.append(prompt5)
+                    if len(prompt6) < 2048:
+                        prompt_list.append(prompt6)
+                if "登录日志" in file_name:
+                    login_counts, daily_counts, pivot_table, error_login_counts, error_pivot_table = st.session_state[
+                        "documents"][0]
+
+                    prompt1 = f"【ID登录频率分析】:{str(login_counts)},其中key为登录ID名称，value为操作频率"
+                    prompt2 = f"【按登录时间分类统计】:{str(daily_counts)},其中key为日期，value为操作频率"
+                    prompt3 = f"【按登录ID和日期分组记录数量】:{str(pivot_table)},其中key为日期和登录ID，value为操作频率"
+                    prompt4 = f"【异常时间段主账号登录频率分析】:{str(error_login_counts)},请分析异常时间点0~6点主账号登录频率,其中key为日期，value为操作频率，如果统计结果为空，请直接返回：无异常时间段登录记录。"
+                    prompt5 = f"【异常时间段主账号日期维度的登录频率分析】:{str(error_pivot_table)},请分析异常时间点0~6点主账号基于日期维度的登录频率,key为日期和主账号名称，value为操作频率，如果统计结果为空，请直接返回：无异常时间段登录记录（日期维度）。"
+                    if len(prompt1) < 2048:
+                        prompt_list.append(prompt1)
+                    if len(prompt2) < 2048:
+                        prompt_list.append(prompt2)
+                    if len(prompt3) < 2048:
+                        prompt_list.append(prompt3)
+                    if len(prompt4) < 2048:
+                        prompt_list.append(prompt4)
+                    if len(prompt5) < 2048:
+                        prompt_list.append(prompt5)
+
+                if "使用日志" in file_name:
+                    print("st.session_state['documents']", st.session_state["documents"])
+                    login_id_counts, operation_counts, daily_counts, login_operation_counts, login_daily_counts, error_login_counts, error_login_daily_counts = \
+                        st.session_state["documents"][0]
+
+                    prompt1 = f"【登录ID使用频率统计】:{str(login_id_counts).strip().replace(' ', '')},其中key为登录ID，value为使用频率"
+                    prompt2 = f"【操作内容使用频率统计】:{str(operation_counts).strip().replace(' ', '')},其中key为操作内容，value为使用频率"
+                    prompt3 = f"【按访问时间分类统计】:{str(daily_counts).strip().replace(' ', '')},其中key为访问时间，value为使用频率"
+                    prompt4 = f"【按登录ID和操作内容分组统计】:{str(login_operation_counts).strip().replace(' ', '')},其中key为操作内容和登录ID，value为使用频率"
+                    prompt5 = f"【按登录ID和日期分组统计】:{str(login_daily_counts).strip().replace(' ', '')},其中key为操作日期和登录ID，value为使用频率"
+                    prompt6 = f"【异常时间段主账号使用频率分析】:{str(error_login_counts).strip().replace(' ', '')},请分析异常时间点0~6点主账号使用频率,其中key为登录ID名称，value为操作频率，如果统计结果为空，请直接返回：无异常时间段使用记录"
+                    prompt7 = f"【异常时间段主账号日期维度的使用频率分析】:{str(error_login_daily_counts).strip().replace(' ', '')},请分析异常时间点0~6点主账号基于日期维度的使用频率,其中key为日期和登录ID，value为登录频率，如果统计结果为空，请直接返回：无异常时间段使用记录（日期维度）。"
+                    if len(prompt1) < 2048:
+                        prompt_list.append(prompt1)
+                    if len(prompt2) < 2048:
+                        prompt_list.append(prompt2)
+                    if len(prompt3) < 2048:
+                        prompt_list.append(prompt3)
+                    if len(prompt4) < 2048:
+                        prompt_list.append(prompt4)
+                    if len(prompt5) < 2048:
+                        prompt_list.append(prompt5)
+                    if len(prompt6) < 2048:
+                        prompt_list.append(prompt6)
+                    if len(prompt7) < 2048:
+                        prompt_list.append(prompt7)
+
+                # exit()
+                prompt += "|".join(prompt_list)
+                print("len_prompt", len(prompt))
+
+                print("prompt", prompt,
+                      "history", history,
+                      "conversation_id", conversation_id,
+                      "llm_model", llm_model,
+                      "prompt_template_name", prompt_template_name,
+                      "temperature", temperature)
+
+                text = ""
+                message_id = ""
+                r = api.chat_chat(prompt,
+                                  history=history,
+                                  conversation_id=conversation_id,
+                                  model=llm_model,
+                                  prompt_name=prompt_template_name,
+                                  temperature=temperature
+                                  )
+                for t in r:
+                    if error_msg := check_error_msg(t):  # check whether error occured
+                        st.error(error_msg)
+                        break
+                    text += t.get("text", "")
+                    chat_box.update_msg(text)
+                    message_id = t.get("message_id", "")
+
+                metadata = {
+                    "message_id": message_id,
+                }
+                chat_box.update_msg(text, streaming=False, metadata=metadata)  # 更新最终的字符串，去除光标
+                chat_box.show_feedback(**feedback_kwargs,
+                                       key=message_id,
+                                       on_submit=on_feedback,
+                                       kwargs={"message_id": message_id, "history_index": len(chat_box.history) - 1})
+                chat_box.ai_say([
+                    f"解析完毕 ，请点击日志分析报告"
+                ])
 
     if st.session_state.get("need_rerun"):
         st.session_state["need_rerun"] = False

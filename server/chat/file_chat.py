@@ -124,14 +124,17 @@ def _parse_log_in_thread(
             kb_file = KnowledgeFile(filename=filename, knowledge_base_name="temp")
             kb_file.filepath = file_path
             parse_info, pkg_info = kb_file.file2dataframe()
+            print("parse_info", parse_info)
+            print("pkg_info", pkg_info)
             return True, filename, parse_info, pkg_info
         except Exception as e:
-            msg = f"{filename} 文件解压失败，报错信息为: {e}"
+            msg = f"{filename} 文件解析失败，报错信息为: {e}"
             return False, filename, msg, []
 
     params = [{"file": file} for file in files]
     for result in run_in_thread_pool(parse_file, params=params):
         yield result
+
 
 def upload_temp_docs(
         files: List[UploadFile] = File(..., description="上传文件，支持多文件"),
@@ -273,6 +276,7 @@ def upload_temp_logfile(
     documents_info = []
     documents = []
     path, id = get_temp_dir(prev_id)
+
     # True, filename, f"成功上传文件 {filename}", docs
     # print("upload_temp_docs_v2_files", files)
     for success, file, msg, docs in _parse_log_in_thread(files=files, dir=path):
