@@ -318,7 +318,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
             key="prompt_template_select",
         )
         prompt_template_name = st.session_state.prompt_template_select
-        temperature = st.slider("Temperature：", 0.0, 2.0, TEMPERATURE, 0.05)
+        # temperature = st.slider("Temperature：", 0.0, 2.0, TEMPERATURE, 0.05, disabled=True)
         history_len = st.number_input("历史对话轮数：", 0, 20, HISTORY_LEN)
 
         def on_kb_change():
@@ -534,14 +534,14 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                       "conversation_id", conversation_id,
                       "llm_model", llm_model,
                       "prompt_template_name", prompt_template_name,
-                      "temperature", temperature)
+                      "temperature", TEMPERATURE)
 
                 r = api.chat_chat(prompt,
                                   history=history,
                                   conversation_id=conversation_id,
                                   model=llm_model,
                                   prompt_name=prompt_template_name,
-                                  temperature=temperature)
+                                  temperature=TEMPERATURE)
                 for t in r:
                     if error_msg := check_error_msg(t):  # check whether error occured
                         st.error(error_msg)
@@ -573,7 +573,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                                                  history=history,
                                                  model=llm_model,
                                                  prompt_name=prompt_template_name,
-                                                 temperature=temperature):
+                                                 temperature=TEMPERATURE):
                     if error_msg := check_error_msg(d):  # check whether error occured
                         st.error(error_msg)
                     elif chunk := d.get("answer"):
@@ -597,7 +597,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                       "history", history,
                       "llm_model", llm_model,
                       "prompt_template_name", prompt_template_name,
-                      "temperature", temperature)
+                      "temperature", TEMPERATURE)
                 for d in api.file_chat_v2(prompt,
                                           knowledge_id=st.session_state["file_chat_id"],
                                           documents=st.session_state["documents"],
@@ -605,7 +605,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                                           history=history,
                                           model_name=llm_model,
                                           prompt_name=prompt_template_name,
-                                          temperature=temperature):
+                                          temperature=TEMPERATURE):
                     if error_msg := check_error_msg(d):  # check whether error occured
                         st.error(error_msg)
                     elif chunk := d.get("answer"):
@@ -634,7 +634,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                       "conversation_id", conversation_id,
                       "llm_model", llm_model,
                       "prompt_template_name", prompt_template_name,
-                      "temperature", temperature)
+                      "temperature", TEMPERATURE)
 
                 text = ""
                 message_id = ""
@@ -643,7 +643,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                                   conversation_id=conversation_id,
                                   model=llm_model,
                                   prompt_name=prompt_template_name,
-                                  temperature=temperature)
+                                  temperature=TEMPERATURE)
                 for t in r:
                     if error_msg := check_error_msg(t):  # check whether error occured
                         st.error(error_msg)
@@ -751,7 +751,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                       "conversation_id", conversation_id,
                       "llm_model", llm_model,
                       "prompt_template_name", prompt_template_name,
-                      "temperature", temperature)
+                      "temperature", TEMPERATURE)
 
                 text = ""
                 message_id = ""
@@ -760,7 +760,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                                   conversation_id=conversation_id,
                                   model=llm_model,
                                   prompt_name=prompt_template_name,
-                                  temperature=temperature
+                                  temperature=TEMPERATURE
                                   )
                 for t in r:
                     if error_msg := check_error_msg(t):  # check whether error occured
