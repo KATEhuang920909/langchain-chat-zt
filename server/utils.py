@@ -67,6 +67,7 @@ def get_ChatOpenAI(
         temperature=temperature,
         max_tokens=max_tokens,
         openai_proxy=config.get("openai_proxy"),
+        default_headers=config.get("default_headers", None),
         **kwargs
     )
     return model

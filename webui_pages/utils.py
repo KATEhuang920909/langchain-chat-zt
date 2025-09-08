@@ -1151,19 +1151,6 @@ class ApiRequest:
         resp = self.post("/chat/feedback", json=data)
         return self._get_response_value(resp)
 
-    def bm25_search(
-            self,
-            query: str,
-
-    ) -> int:
-        '''
-        反馈对话评价
-        '''
-        data = {
-            "query": documents
-        }
-        resp = self.post("/chat/feedback", json=data)
-        return self._get_response_value(resp)
 
 
 class AsyncApiRequest(ApiRequest):

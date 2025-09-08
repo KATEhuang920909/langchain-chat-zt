@@ -26,7 +26,8 @@ EMBEDDING_MODEL_OUTPUT_PATH = "output"
 # 在这里，我们使用目前主流的两个离线模型，其中，chatglm3-6b 为默认加载模型。
 # 如果你的显存不足，可使用 Qwen-1_8B-Chat, 该模型 FP16 仅需 3.8G显存。
 # 
-LLM_MODELS = ["zhipu-api"]
+# LLM_MODELS = ["zhipu-api"]
+
 Agent_MODEL = None
 
 # LLM 模型运行设备。设为"auto"会自动检测(会有警告)，也可手动设定为 "cuda","mps","cpu","xpu" 其中之一。
@@ -38,12 +39,28 @@ MAX_TOKENS = 10240
 
 TEMPERATURE = 0.01
 
+# ++++++++++++++++++++胖子平台参数++++++++++++
+LLM_MODELS = ["openai-api"]
+S = "EMPTY"
+api_key = S
+
+base_url = "http://10.209.179.204:9050/scmp/v1"
+model_name = "Qwen2-7b-instruct"
+# model_name = "Qwen2-0.5B"
+default_headers = {
+    "appkey": "624ec327432cd845096aa7323b7591e2",
+    "x-server-param": "eyJhcHBpZCI6ICJzY21wLW5scCIsICJjc2lkIjogInNjbXAtbmxwc2NtcDAwMDAwMDAwMDAwMDAwMDAwMDAwZjJkZjFiYTE4ZDg1NGI3NTgzYWRjMmRiNTQ1MTRjMTkifQ=="
+}
+# ++++++++++++++++++++我是有底线的++++++++++++
+
+
 ONLINE_LLM_MODEL = {
     "openai-api": {
-        "model_name": "gpt-4",  # "gpt-3.5-turbo"
-        "api_base_url": "https://api.openai.com/v1",
-        "api_key": "",
+        "model_name": model_name,  # "gpt-4",  # "gpt-3.5-turbo"
+        "api_base_url": base_url,  # "https://api.openai.com/v1",
+        "api_key": api_key,  # "",
         "openai_proxy": "",
+        "default_headers": default_headers
     },
 
     # 智谱AI API,具体注册及api key获取请前往 http://open.bigmodel.cn
