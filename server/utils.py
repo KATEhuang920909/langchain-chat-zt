@@ -72,7 +72,6 @@ def get_ChatOpenAI(
     )
     return model
 
-
 def get_OpenAI(
         model_name: str,
         temperature: float,

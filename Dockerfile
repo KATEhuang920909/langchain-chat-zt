@@ -1,5 +1,5 @@
 # 使用官方Python镜像作为基础
-FROM python:3.11.9
+FROM python:3.11-slim
 
 # 设置工作目录
 WORKDIR /app
@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 
 # 暴露Streamlit默认端口
-EXPOSE 8501
+#EXPOSE 8501
 
 # 启动命令
-CMD ["streamlit", "run", "app_v2.py","--server.fileWatcherType", "none","--server.headless", "true","--browser.gatherUsageStats","false","--server.address","0.0.0.0"]
+CMD ["python", "startup.py","-a"]

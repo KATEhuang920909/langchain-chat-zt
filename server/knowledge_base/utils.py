@@ -365,27 +365,26 @@ class KnowledgeFile:
         if "操作日志" in self.filename:  # 主机操作日志
             account_counts, daily_counts, operation_counts, account_daily_counts, error_login_counts, error_login_daily_counts = OperationLog(
                 data)
-            return "操作日志", [account_counts.to_dict(), daily_counts.to_dict(), operation_counts.to_dict(),
-                                account_daily_counts.to_dict(),
-                                error_login_counts.to_dict(), error_login_daily_counts.to_dict()]
+            return "操作日志", [account_counts, daily_counts, operation_counts,
+                                account_daily_counts,
+                                error_login_counts, error_login_daily_counts]
         elif "登录日志" in self.filename:  # 主机登录日志
             login_counts, daily_counts, pivot_table, error_login_counts, error_pivot_table = EnterLog(data)
+            print(login_counts,[])
+            exit()
             # return "登录日志", [login_counts.to_dict(), daily_counts.to_dict(), pivot_table.to_dict(), error_login_counts.to_dict(), error_pivot_table.to_dict()]
-            return "登录日志", [login_counts.to_dict(), daily_counts.to_dict(), pivot_table.to_dict(),
-                                error_login_counts.to_dict(), error_pivot_table.to_dict()]
+            return "登录日志", [login_counts, daily_counts, pivot_table, error_login_counts, error_pivot_table]
         elif "使用日志" in self.filename:  # 主机登录日志
             login_id_counts, operation_counts, daily_counts, login_operation_counts, login_daily_counts, error_login_counts, error_login_daily_counts = UseLog(
                 data)
-            return "使用日志", [login_id_counts.to_dict(), operation_counts.to_dict(), daily_counts.to_dict(),
-                                login_operation_counts.to_dict(),
-                                login_daily_counts.to_dict(), error_login_counts.to_dict(),
-                                error_login_daily_counts.to_dict()]
+            return "使用日志", [login_id_counts, operation_counts, daily_counts, login_operation_counts,
+                                login_daily_counts, error_login_counts, error_login_daily_counts]
 
         return "", []
 
     def file2dataframe(self, refresh: bool = False):
-        print("self.docs", self.docs)
-        print("self.ext", self.ext)
+        # print("self.docs", self.docs)
+        # print("self.ext", self.ext)
         if self.docs is None or refresh:
             logger.info(f"pandas used for {self.filepath}")
             if self.ext in [".xlsx", ".xls"]:

@@ -124,8 +124,8 @@ def _parse_log_in_thread(
             kb_file = KnowledgeFile(filename=filename, knowledge_base_name="temp")
             kb_file.filepath = file_path
             parse_info, pkg_info = kb_file.file2dataframe()
-            print("parse_info", parse_info)
-            print("pkg_info", pkg_info)
+            # print("parse_info", parse_info)
+            # print("pkg_info", pkg_info)
             return True, filename, parse_info, pkg_info
         except Exception as e:
             msg = f"{filename} 文件解析失败，报错信息为: {e}"

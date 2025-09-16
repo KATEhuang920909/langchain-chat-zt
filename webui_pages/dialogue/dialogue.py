@@ -137,7 +137,7 @@ def upload_temp_logfile(files, _api: ApiRequest) -> tuple:
     '''
 
     data = _api.upload_temp_logfile(files).get("data", {})
-    print("_api.upload_temp_logfile(files)", data)
+    # print("_api.upload_temp_logfile(files)", data)
     id, success_info, table_df, documents = data.get("id"), data.get("success_info"), data.get("table_df"), data.get(
         "documents")
     return id, success_info, table_df, documents
@@ -403,8 +403,8 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                                             [i for ls in PKG_DICT.values() for i in ls],
                                             accept_multiple_files=True,
                                             )
-                print("files_material_list", files_material_list)
-                print("pkg_file", pkg_file)
+                # print("files_material_list", files_material_list)
+                # print("pkg_file", pkg_file)
                 upload_button = st.button("开始上传", disabled=(len(files_material_list) != 1 or len(pkg_file) != 1))
 
                 if upload_button:
@@ -418,7 +418,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                         print("files", files_material_list)
                         print("success_info", success_info)
                         print("table_df", table_df)
-                        print("documents", documents)
+                        # print("documents", documents)
                         st.session_state["file_chat_id"] = doc_id
                         st.session_state["documents"] = documents
                         st.success(success_info)
@@ -430,7 +430,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                         print("files", files_material_list)
                         print("success_info", success_info)
                         print("table_df", table_df)
-                        print("documents", documents)
+                        # print("documents", documents)
                         st.session_state["pkg_file"] = documents
                         st.success(success_info)
                         if len(st.session_state["df_upload"]) != 0:
@@ -455,7 +455,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                                          accept_multiple_files=True,
                                          )
 
-                print("files", files)
+                # print("files", files)
                 ## Bge 模型会超过1
                 # score_threshold = st.slider("知识匹配分数阈值：", 0.0, 2.0, float(SCORE_THRESHOLD), 0.01)
                 upload_button = st.button("开始上传", disabled=len(files) != 1)
@@ -472,7 +472,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                         print("files", files)
                         print("success_info", success_info)
                         print("table_df", table_df)
-                        print("documents", documents)
+                        # print("documents", documents)
                         st.session_state["file_chat_id"] = doc_id
                         st.session_state["documents"] = documents
                         st.success(success_info)
@@ -683,17 +683,17 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                     prompt4 = f"【按主账号和操作时间分组统计】:{str(account_daily_counts)},其中key为日期和主账号名称，value为操作频率"
                     prompt5 = f"【异常时间段主账号操作频率分析】:{str(account_daily_counts)},请分析异常时间点0~6点主账号操作频率，其中key为主账号名称，value为操作频率，如果统计结果为空，请直接返回：无异常时间段操作记录。"
                     prompt6 = f"【异常时间段主账号日期维度的操作频率分析】:{str(error_login_daily_counts)},请分析异常时间点0~6点主账号基于日期维度的操作频率，其中key为操作内容，value为操作频率，如果统计结果为空，请直接返回：无异常时间段操作记录（日期维度）。"
-                    if len(prompt1) < 2048:
+                    if len(prompt1) < 4096:
                         prompt_list.append(prompt1)
-                    if len(prompt2) < 2048:
+                    if len(prompt2) < 4096:
                         prompt_list.append(prompt2)
-                    if len(prompt3) < 2048:
+                    if len(prompt3) < 4096:
                         prompt_list.append(prompt3)
-                    if len(prompt4) < 2048:
+                    if len(prompt4) < 4096:
                         prompt_list.append(prompt4)
-                    if len(prompt5) < 2048:
+                    if len(prompt5) < 4096:
                         prompt_list.append(prompt5)
-                    if len(prompt6) < 2048:
+                    if len(prompt6) < 4096:
                         prompt_list.append(prompt6)
                 if "登录日志" in file_name:
                     login_counts, daily_counts, pivot_table, error_login_counts, error_pivot_table = st.session_state[
@@ -704,19 +704,24 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                     prompt3 = f"【按登录ID和日期分组记录数量】:{str(pivot_table)},其中key为日期和登录ID，value为操作频率"
                     prompt4 = f"【异常时间段主账号登录频率分析】:{str(error_login_counts)},请分析异常时间点0~6点主账号登录频率,其中key为日期，value为操作频率，如果统计结果为空，请直接返回：无异常时间段登录记录。"
                     prompt5 = f"【异常时间段主账号日期维度的登录频率分析】:{str(error_pivot_table)},请分析异常时间点0~6点主账号基于日期维度的登录频率,key为日期和主账号名称，value为操作频率，如果统计结果为空，请直接返回：无异常时间段登录记录（日期维度）。"
-                    if len(prompt1) < 2048:
+                    print("login_counts", len(prompt1))
+                    print("daily_counts", len(prompt2))
+                    print("pivot_table", len(prompt3))
+                    print("error_login_counts", len(prompt4))
+                    print("error_pivot_table", len(prompt5))
+                    if len(prompt1) < 4096:
                         prompt_list.append(prompt1)
-                    if len(prompt2) < 2048:
+                    if len(prompt2) < 4096:
                         prompt_list.append(prompt2)
-                    if len(prompt3) < 2048:
+                    if len(prompt3) < 4096:
                         prompt_list.append(prompt3)
-                    if len(prompt4) < 2048:
+                    if len(prompt4) < 4096:
                         prompt_list.append(prompt4)
-                    if len(prompt5) < 2048:
+                    if len(prompt5) < 4096:
                         prompt_list.append(prompt5)
 
                 if "使用日志" in file_name:
-                    print("st.session_state['documents']", st.session_state["documents"])
+                    # print("st.session_state['documents']", st.session_state["documents"])
                     login_id_counts, operation_counts, daily_counts, login_operation_counts, login_daily_counts, error_login_counts, error_login_daily_counts = \
                         st.session_state["documents"][0]
 
@@ -727,22 +732,29 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                     prompt5 = f"【按登录ID和日期分组统计】:{str(login_daily_counts).strip().replace(' ', '')},其中key为操作日期和登录ID，value为使用频率"
                     prompt6 = f"【异常时间段主账号使用频率分析】:{str(error_login_counts).strip().replace(' ', '')},请分析异常时间点0~6点主账号使用频率,其中key为登录ID名称，value为操作频率，如果统计结果为空，请直接返回：无异常时间段使用记录"
                     prompt7 = f"【异常时间段主账号日期维度的使用频率分析】:{str(error_login_daily_counts).strip().replace(' ', '')},请分析异常时间点0~6点主账号基于日期维度的使用频率,其中key为日期和登录ID，value为登录频率，如果统计结果为空，请直接返回：无异常时间段使用记录（日期维度）。"
-                    if len(prompt1) < 2048:
+                    print("login_id_counts", len(prompt1))
+                    print("operation_counts", len(prompt2))
+                    print("daily_counts", len(prompt3))
+                    print("login_operation_counts", len(prompt4))
+                    print("login_daily_counts", len(prompt5))
+                    print("error_login_counts", len(prompt6))
+                    print("error_login_daily_counts", len(prompt7))
+                    if len(prompt1) < 4096:
                         prompt_list.append(prompt1)
-                    if len(prompt2) < 2048:
+                    if len(prompt2) < 4096:
                         prompt_list.append(prompt2)
-                    if len(prompt3) < 2048:
+                    if len(prompt3) < 4096:
                         prompt_list.append(prompt3)
-                    if len(prompt4) < 2048:
+                    if len(prompt4) < 4096:
                         prompt_list.append(prompt4)
-                    if len(prompt5) < 2048:
+                    if len(prompt5) < 4096:
                         prompt_list.append(prompt5)
-                    if len(prompt6) < 2048:
+                    if len(prompt6) < 4096:
                         prompt_list.append(prompt6)
-                    if len(prompt7) < 2048:
+                    if len(prompt7) < 4096:
                         prompt_list.append(prompt7)
 
-                # exit()
+                    # exit()
                 prompt += "|".join(prompt_list)
                 print("len_prompt", len(prompt))
 
