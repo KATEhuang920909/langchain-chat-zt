@@ -10,6 +10,7 @@ import sys
 from typing import List, Dict, Iterator, Literal, Any
 import jwt
 import time
+from configs.model_config import MAX_TOKENS
 
 
 @contextmanager
@@ -49,7 +50,7 @@ class ChatGLMWorker(ApiModelWorker):
             **kwargs,
     ):
         kwargs.update(model_names=model_names, controller_addr=controller_addr, worker_addr=worker_addr)
-        kwargs.setdefault("context_len", 4096)
+        kwargs.setdefault("context_len", MAX_TOKENS)
         super().__init__(**kwargs)
         self.version = version
 
@@ -82,8 +83,6 @@ class ChatGLMWorker(ApiModelWorker):
             #         if len(chunk["choices"]) != 0:
             #             text += chunk["choices"][0]["delta"]["content"]
             #             yield {"error_code": 0, "text": text}
-
-
 
     def get_embeddings(self, params):
         print("embedding")
