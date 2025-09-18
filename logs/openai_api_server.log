@@ -5,3 +5,159 @@
 2025-09-17 19:34:42 | INFO | stdout | [32mINFO[0m:     127.0.0.1:6627 - "[1mPOST /v1/chat/completions HTTP/1.1[0m" [32m200 OK[0m
 2025-09-17 19:35:20 | INFO | stdout | [32mINFO[0m:     127.0.0.1:12263 - "[1mPOST /v1/chat/completions HTTP/1.1[0m" [31m400 Bad Request[0m
 2025-09-17 19:42:13 | ERROR | stderr | [32mINFO[0m:     Shutting down
+2025-09-17 19:44:14 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m22544[0m]
+2025-09-17 19:44:14 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-17 19:44:14 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-17 19:44:14 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-09-17 19:45:44 | INFO | stdout | [32mINFO[0m:     127.0.0.1:12609 - "[1mPOST /v1/chat/completions HTTP/1.1[0m" [32m200 OK[0m
+2025-09-17 19:47:25 | ERROR | stderr | [31mERROR[0m:    Exception in ASGI application
+2025-09-17 19:47:25 | ERROR | stderr |   + Exception Group Traceback (most recent call last):
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 406, in run_asgi
+2025-09-17 19:47:25 | ERROR | stderr |   |     result = await app(  # type: ignore[func-returns-value]
+2025-09-17 19:47:25 | ERROR | stderr |   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 70, in __call__
+2025-09-17 19:47:25 | ERROR | stderr |   |     return await self.app(scope, receive, send)
+2025-09-17 19:47:25 | ERROR | stderr |   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+2025-09-17 19:47:25 | ERROR | stderr |   |     await super().__call__(scope, receive, send)
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\applications.py", line 119, in __call__
+2025-09-17 19:47:25 | ERROR | stderr |   |     await self.middleware_stack(scope, receive, send)
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+2025-09-17 19:47:25 | ERROR | stderr |   |     raise exc
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+2025-09-17 19:47:25 | ERROR | stderr |   |     await self.app(scope, receive, _send)
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\middleware\cors.py", line 83, in __call__
+2025-09-17 19:47:25 | ERROR | stderr |   |     await self.app(scope, receive, send)
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+2025-09-17 19:47:25 | ERROR | stderr |   |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+2025-09-17 19:47:25 | ERROR | stderr |   |     raise exc
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+2025-09-17 19:47:25 | ERROR | stderr |   |     await app(scope, receive, sender)
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\routing.py", line 762, in __call__
+2025-09-17 19:47:25 | ERROR | stderr |   |     await self.middleware_stack(scope, receive, send)
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\routing.py", line 782, in app
+2025-09-17 19:47:25 | ERROR | stderr |   |     await route.handle(scope, receive, send)
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\routing.py", line 297, in handle
+2025-09-17 19:47:25 | ERROR | stderr |   |     await self.app(scope, receive, send)
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\routing.py", line 77, in app
+2025-09-17 19:47:25 | ERROR | stderr |   |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+2025-09-17 19:47:25 | ERROR | stderr |   |     raise exc
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+2025-09-17 19:47:25 | ERROR | stderr |   |     await app(scope, receive, sender)
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\routing.py", line 75, in app
+2025-09-17 19:47:25 | ERROR | stderr |   |     await response(scope, receive, send)
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\responses.py", line 254, in __call__
+2025-09-17 19:47:25 | ERROR | stderr |   |     async with anyio.create_task_group() as task_group:
+2025-09-17 19:47:25 | ERROR | stderr |   |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 772, in __aexit__
+2025-09-17 19:47:25 | ERROR | stderr |   |     raise BaseExceptionGroup(
+2025-09-17 19:47:25 | ERROR | stderr |   | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+2025-09-17 19:47:25 | ERROR | stderr |   +-+---------------- 1 ----------------
+2025-09-17 19:47:25 | ERROR | stderr |     | Traceback (most recent call last):
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\httpx\_transports\default.py", line 67, in map_httpcore_exceptions
+2025-09-17 19:47:25 | ERROR | stderr |     |     yield
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\httpx\_transports\default.py", line 252, in __aiter__
+2025-09-17 19:47:25 | ERROR | stderr |     |     async for part in self._httpcore_stream:
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 407, in __aiter__
+2025-09-17 19:47:25 | ERROR | stderr |     |     raise exc from None
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 403, in __aiter__
+2025-09-17 19:47:25 | ERROR | stderr |     |     async for part in self._stream:
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\httpcore\_async\http11.py", line 342, in __aiter__
+2025-09-17 19:47:25 | ERROR | stderr |     |     raise exc
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\httpcore\_async\http11.py", line 334, in __aiter__
+2025-09-17 19:47:25 | ERROR | stderr |     |     async for chunk in self._connection._receive_response_body(**kwargs):
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\httpcore\_async\http11.py", line 203, in _receive_response_body
+2025-09-17 19:47:25 | ERROR | stderr |     |     event = await self._receive_event(timeout=timeout)
+2025-09-17 19:47:25 | ERROR | stderr |     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\httpcore\_async\http11.py", line 217, in _receive_event
+2025-09-17 19:47:25 | ERROR | stderr |     |     data = await self._network_stream.read(
+2025-09-17 19:47:25 | ERROR | stderr |     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\httpcore\_backends\anyio.py", line 32, in read
+2025-09-17 19:47:25 | ERROR | stderr |     |     with map_exceptions(exc_map):
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\software\work\py311\Lib\contextlib.py", line 158, in __exit__
+2025-09-17 19:47:25 | ERROR | stderr |     |     self.gen.throw(typ, value, traceback)
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+2025-09-17 19:47:25 | ERROR | stderr |     |     raise to_exc(exc) from exc
+2025-09-17 19:47:25 | ERROR | stderr |     | httpcore.ReadTimeout
+2025-09-17 19:47:25 | ERROR | stderr |     |
+2025-09-17 19:47:25 | ERROR | stderr |     | The above exception was the direct cause of the following exception:
+2025-09-17 19:47:25 | ERROR | stderr |     |
+2025-09-17 19:47:25 | ERROR | stderr |     | Traceback (most recent call last):
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\responses.py", line 257, in wrap
+2025-09-17 19:47:25 | ERROR | stderr |     |     await func()
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\starlette\responses.py", line 246, in stream_response
+2025-09-17 19:47:25 | ERROR | stderr |     |     async for chunk in self.body_iterator:
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\fastchat\serve\openai_api_server.py", line 473, in chat_completion_stream_generator
+2025-09-17 19:47:25 | ERROR | stderr |     |     async for content in generate_completion_stream(gen_params, worker_addr):
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\fastchat\serve\openai_api_server.py", line 658, in generate_completion_stream
+2025-09-17 19:47:25 | ERROR | stderr |     |     async for raw_chunk in response.aiter_raw():
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\httpx\_models.py", line 991, in aiter_raw
+2025-09-17 19:47:25 | ERROR | stderr |     |     async for raw_stream_bytes in self.stream:
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\httpx\_client.py", line 147, in __aiter__
+2025-09-17 19:47:25 | ERROR | stderr |     |     async for chunk in self._stream:
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\httpx\_transports\default.py", line 251, in __aiter__
+2025-09-17 19:47:25 | ERROR | stderr |     |     with map_httpcore_exceptions():
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\software\work\py311\Lib\contextlib.py", line 158, in __exit__
+2025-09-17 19:47:25 | ERROR | stderr |     |     self.gen.throw(typ, value, traceback)
+2025-09-17 19:47:25 | ERROR | stderr |     |   File "D:\work\中台\中台安全运营工具\LLM\main\venv\Lib\site-packages\httpx\_transports\default.py", line 84, in map_httpcore_exceptions
+2025-09-17 19:47:25 | ERROR | stderr |     |     raise mapped_exc(message) from exc
+2025-09-17 19:47:25 | ERROR | stderr |     | httpx.ReadTimeout
+2025-09-17 19:47:25 | ERROR | stderr |     +------------------------------------
+2025-09-17 19:58:42 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m15196[0m]
+2025-09-17 19:58:42 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-17 19:58:42 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-17 19:58:42 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-09-17 20:04:03 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m33376[0m]
+2025-09-17 20:04:03 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-17 20:04:03 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-17 20:04:03 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-09-17 20:05:38 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m4132[0m]
+2025-09-17 20:05:38 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-17 20:05:38 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-17 20:05:38 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-09-17 20:11:08 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m28976[0m]
+2025-09-17 20:11:08 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-17 20:11:08 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-17 20:11:08 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-09-17 20:15:23 | INFO | stdout | [32mINFO[0m:     127.0.0.1:7795 - "[1mPOST /v1/chat/completions HTTP/1.1[0m" [32m200 OK[0m
+2025-09-18 10:50:23 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m24520[0m]
+2025-09-18 10:50:23 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-18 10:50:23 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-18 10:50:23 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-09-18 14:51:13 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m6180[0m]
+2025-09-18 14:51:13 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-18 14:51:13 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-18 14:51:13 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-09-18 15:00:54 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m18788[0m]
+2025-09-18 15:00:54 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-18 15:00:54 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-18 15:00:54 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-09-18 15:07:22 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m19176[0m]
+2025-09-18 15:07:22 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-18 15:07:22 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-18 15:07:22 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-09-18 15:12:22 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m12896[0m]
+2025-09-18 15:12:22 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-18 15:12:22 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-18 15:12:22 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-09-18 15:13:54 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m8256[0m]
+2025-09-18 15:13:54 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-18 15:13:54 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-18 15:13:54 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-09-18 15:18:30 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m8484[0m]
+2025-09-18 15:18:30 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-18 15:18:30 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-18 15:18:30 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-09-18 15:28:28 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m3800[0m]
+2025-09-18 15:28:28 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-18 15:28:28 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-18 15:28:28 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-09-18 16:39:35 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m3392[0m]
+2025-09-18 16:39:35 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-18 16:39:35 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-18 16:39:35 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)
+2025-09-18 17:13:43 | ERROR | stderr | [32mINFO[0m:     Started server process [[36m10104[0m]
+2025-09-18 17:13:43 | ERROR | stderr | [32mINFO[0m:     Waiting for application startup.
+2025-09-18 17:13:43 | ERROR | stderr | [32mINFO[0m:     Application startup complete.
+2025-09-18 17:13:43 | ERROR | stderr | [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:19249[0m (Press CTRL+C to quit)

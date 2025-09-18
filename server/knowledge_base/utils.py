@@ -89,38 +89,37 @@ def list_files_from_folder(kb_name: str):
     return result
 
 
-LOADER_DICT = {"UnstructuredHTMLLoader": ['.html', '.htm'],
-               "MHTMLLoader": ['.mhtml'],
-               "UnstructuredMarkdownLoader": ['.md'],
-               "JSONLoader": [".json"],
-               "JSONLinesLoader": [".jsonl"],
-               "CSVLoader": [".csv"],
-               # "FilteredCSVLoader": [".csv"], 如果使用自定义分割csv
-               "PyPDFLoader": [".pdf"],
-               "Docx2txtLoader": ['.docx', '.doc'],
-               "TextLoader": ['txt'],
-               "RapidOCRPPTLoader": ['.ppt', '.pptx', ],
-               "RapidOCRLoader": ['.png', '.jpg', '.jpeg', '.bmp'],
-               "UnstructuredFileLoader": ['.eml', '.msg', '.rst',
-                                          '.rtf', '.xml',
-                                          '.epub', '.odt', '.tsv'],
-               "UnstructuredEmailLoader": ['.eml', '.msg'],
-               "UnstructuredEPubLoader": ['.epub'],
-               "UnstructuredExcelLoader": ['.xlsx', '.xls', '.xlsd'],
-               "NotebookLoader": ['.ipynb'],
-               "UnstructuredODTLoader": ['.odt'],
-               "PythonLoader": ['.py'],
-               "UnstructuredRSTLoader": ['.rst'],
-               "UnstructuredRTFLoader": ['.rtf'],
-               "SRTLoader": ['.srt'],
-               "TomlLoader": ['.toml'],
-               "UnstructuredTSVLoader": ['.tsv'],
-               # "UnstructuredWordDocumentLoader": ['.docx', '.doc'],
-               "UnstructuredXMLLoader": ['.xml'],
-               "UnstructuredPowerPointLoader": ['.ppt', '.pptx'],
-               "EverNoteLoader": ['.enex'],
+LOADER_DICT = {
+    "UnstructuredHTMLLoader": ['.html', '.htm'],
+    "MHTMLLoader": ['.mhtml'],
+    "UnstructuredMarkdownLoader": ['.md'],
+    "JSONLoader": [".json"],
+    "JSONLinesLoader": [".jsonl"],
+    "CSVLoader": [".csv"],
+    "PyPDFLoader": [".pdf"],
+    "Docx2txtLoader": ['.docx'],
+    "TextLoader": ['txt'],
+    "RapidOCRPPTLoader": ['.ppt', '.pptx', ],
+    "RapidOCRLoader": ['.png', '.jpg', '.jpeg', '.bmp'],
+    "UnstructuredFileLoader": ['.eml', '.msg', '.rst',
+                               '.rtf', '.xml',
+                               '.epub', '.odt', '.tsv'],
+    "UnstructuredEmailLoader": ['.eml', '.msg'],
+    "UnstructuredEPubLoader": ['.epub'],
+    "UnstructuredExcelLoader": ['.xlsx', '.xls', '.xlsd'],
+    "NotebookLoader": ['.ipynb'],
+    "UnstructuredODTLoader": ['.odt'],
+    "PythonLoader": ['.py'],
+    "UnstructuredRSTLoader": ['.rst'],
+    "UnstructuredRTFLoader": ['.rtf'],
+    "SRTLoader": ['.srt'],
+    "TomlLoader": ['.toml'],
+    "UnstructuredTSVLoader": ['.tsv'],
+    "UnstructuredXMLLoader": ['.xml'],
+    "UnstructuredPowerPointLoader": ['.ppt', '.pptx'],
+    "EverNoteLoader": ['.enex'],
 
-               }
+}
 PKG_DICT = {"PKGFileLoader": [".zip", ".tar.gz", ".7z"]}
 LOG_DICT = {"UnstructuredExcelLoader": [".xlsx", ".xls", ".xlsd"], "CSVLoader": [".csv"], }
 SUPPORTED_EXTS = [ext for sublist in list(LOADER_DICT.values()) + list(PKG_DICT.values()) for ext in sublist]
@@ -370,7 +369,7 @@ class KnowledgeFile:
                                 error_login_counts, error_login_daily_counts]
         elif "登录日志" in self.filename:  # 主机登录日志
             login_counts, daily_counts, pivot_table, error_login_counts, error_pivot_table = EnterLog(data)
-            print(login_counts,[])
+            print(login_counts, [])
             exit()
             # return "登录日志", [login_counts.to_dict(), daily_counts.to_dict(), pivot_table.to_dict(), error_login_counts.to_dict(), error_pivot_table.to_dict()]
             return "登录日志", [login_counts, daily_counts, pivot_table, error_login_counts, error_pivot_table]

@@ -147,3 +147,4 @@ TEXT_SPLITTER_NAME = "chinese_text_splitter"
 
 # Embedding模型定制词语的词表文件
 EMBEDDING_KEYWORD_FILE = "embedding_keywords.txt"
+

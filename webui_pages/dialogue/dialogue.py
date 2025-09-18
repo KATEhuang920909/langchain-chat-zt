@@ -7,12 +7,11 @@ import os
 import re
 import time
 from configs import (TEMPERATURE, HISTORY_LEN, PROMPT_TEMPLATES, LLM_MODELS,
-                     DEFAULT_KNOWLEDGE_BASE, BM25_SEARCH_TOP_K)
+                     DEFAULT_KNOWLEDGE_BASE, BM25_SEARCH_TOP_K,CSS_UPLOAD_TEMPLATE)
 from server.knowledge_base.utils import LOADER_DICT, PKG_DICT, LOG_DICT
 import uuid
 from typing import List, Dict
 import pandas as pd
-from PIL import Image
 
 chat_box = ChatBox(
     greetings=['欢迎使用能力中台安全测评工具，我们竭诚为您服务!\n\n'],
@@ -212,7 +211,10 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
             st.write("\n\n".join(cmds))
 
     with st.sidebar:
+
+        global CSS_UPLOAD_TEMPLATE
         # 多会话
+        st.markdown(CSS_UPLOAD_TEMPLATE, unsafe_allow_html=True)
         conv_names = list(st.session_state["conversation_ids"].keys())
         index = 0
         if st.session_state.get("cur_conv_name") in conv_names:
@@ -220,7 +222,6 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
         conversation_name = st.selectbox("当前会话：", conv_names, index=index)
         chat_box.use_chat_name(conversation_name)
         conversation_id = st.session_state["conversation_ids"][conversation_name]
-
         def on_mode_change():
             mode = st.session_state.dialogue_mode
             text = f"已切换到 {mode} 模式。"
@@ -342,11 +343,13 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                 ## Bge 模型会超过1
                 score_threshold = st.slider("知识匹配分数阈值：", 0.0, 2.0, float(SCORE_THRESHOLD), 0.01)
         elif dialogue_mode == "文件对话":
+            file_format = ",".join([i for ls in LOADER_DICT.values() for i in ls if i != '.doc'])
 
             with st.expander("文件对话配置", True):
                 files = st.file_uploader("上传知识文件：",
-                                         [i for ls in LOADER_DICT.values() for i in ls if i != '.doc'],
+                                         # [i for ls in LOADER_DICT.values() for i in ls if i != '.doc'],
                                          accept_multiple_files=True,
+                                         help="格式：{}".format(file_format)
                                          )
 
                 kb_top_k = st.number_input("匹配知识条数：", 1, 20, BM25_SEARCH_TOP_K)
@@ -394,14 +397,20 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
         elif dialogue_mode == "材料匹配":
 
             with st.expander("材料匹配配置", True):
+                file_format2 = ",".join([".docx", ".xlsx", ".xls", ".txt"])
                 files_material_list = st.file_uploader("请上传材料清单：",
-                                                       [".docx", ".xlsx", ".xls", "txt"],
+                                                       # [".docx", ".xlsx", ".xls", "txt"],
                                                        accept_multiple_files=True,
+                                                       help="格式：{}".format(file_format2)
                                                        )
 
+
+
+                file_format3 = ",".join( [i for ls in PKG_DICT.values() for i in ls])
                 pkg_file = st.file_uploader("请上传能力材料：",
-                                            [i for ls in PKG_DICT.values() for i in ls],
+                                            # [i for ls in PKG_DICT.values() for i in ls],
                                             accept_multiple_files=True,
+                                            help="格式：{}".format(file_format3)
                                             )
                 # print("files_material_list", files_material_list)
                 # print("pkg_file", pkg_file)
@@ -450,9 +459,12 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                     __ = [st.write(f"✅使用文档：{name}") for name in file_name]
         elif dialogue_mode == "日志解析":
             with st.expander("日志解析配置", True):
+                file_format4 = ",".join([i for ls in LOG_DICT.values() for i in ls])
+
                 files = st.file_uploader("上传日志：",
-                                         [i for ls in LOG_DICT.values() for i in ls],
+                                         # [i for ls in LOG_DICT.values() for i in ls],
                                          accept_multiple_files=True,
+                                         help="格式：{}".format(file_format4)
                                          )
 
                 # print("files", files)

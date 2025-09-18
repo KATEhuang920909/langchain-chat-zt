@@ -71,3 +71,4 @@ pyjwt==2.8.0
 selenium==4.35.0
 docx2txt
 py7zr
+jieba==0.42.1

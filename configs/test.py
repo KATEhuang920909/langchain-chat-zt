@@ -1,37 +1,7 @@
-import logging
-import os
-import langchain
-import tempfile
-import shutil
+import streamlit as st
 
-
-# 是否显示详细日志
-log_verbose = False
-langchain.verbose = False
-
-# 通常情况下不需要更改以下内容
-
-# 日志格式
-LOG_FORMAT = "%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s"
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-logging.basicConfig(format=LOG_FORMAT)
-
-
-# 日志存储路径
-LOG_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
-if not os.path.exists(LOG_PATH):
-    os.mkdir(LOG_PATH)
-
-# 临时文件目录，主要用于文件对话
-BASE_TEMP_DIR = os.path.join(tempfile.gettempdir(), "chatchat")
-try:
-    shutil.rmtree(BASE_TEMP_DIR)
-except Exception:
-    pass
-os.makedirs(BASE_TEMP_DIR, exist_ok=True)
-
-CSS_UPLOAD_TEMPLATE = '''
+# 注入自定义 CSS，优化文件上传组件的样式
+css = '''
 <style>
     /* 拖放区域提示文本 */
     [data-testid="stFileUploaderDropzone"] div div::before {
@@ -40,21 +10,22 @@ CSS_UPLOAD_TEMPLATE = '''
 
     /* 隐藏默认的提示文本 */
     [data-testid="stFileUploaderDropzone"] div div span {
-        display: none;
+        display: none !important;
     }
 
     /* 文件大小及类型提示 */
     [data-testid="stFileUploaderDropzone"] div div::after {
         color: rgba(49, 51, 63, 0.6);
         font-size: .8em;
-        content: "每个文件限制200MB";
+        content: "每个文件限制200MB•XLSX";
     }
 
     /* 隐藏默认的文件大小提示 */
     [data-testid="stFileUploaderDropzone"] div div small {
-        display: none;
+        display: none !important;
     }
-/* 处理按钮文本 - 尝试不同的选择器组合 */
+
+    /* 处理按钮文本 - 尝试不同的选择器组合 */
     [data-testid="stFileUploaderDropzone"] button {
         font-size: 0 !important;
     }
@@ -75,3 +46,18 @@ CSS_UPLOAD_TEMPLATE = '''
     }
 </style>
 '''
+
+st.markdown(css, unsafe_allow_html=True)
+
+
+# 创建文件上传组件
+uploaded_file = st.file_uploader(
+    "请上传ZIP压缩包",
+    type="zip",
+    accept_multiple_files=False,
+    help="格式：html,htm,mhtml,md,json,jsonl,csv,pdf,docx,txt,ppt,pptx,png,jpg,jpeg,bmp,eml,msg,rst,rtf,xml,epub,odt,tsv,eml,msg,epub,xlsx,xls,xlsd,ipynb,odt,py,rst,rtf,srt,toml,tsv,xml,ppt,pptx,enex"
+)
+
+# 测试：显示上传结果
+if uploaded_file is not None:
+    st.success(f"已上传文件：{uploaded_file.name}")

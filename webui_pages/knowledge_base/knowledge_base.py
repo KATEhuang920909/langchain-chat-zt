@@ -8,7 +8,7 @@ from server.knowledge_base.kb_service.base import get_kb_details, get_kb_file_de
 from typing import Literal, Dict, Tuple
 from configs import (kbs_config,
                      EMBEDDING_MODEL, DEFAULT_VS_TYPE,
-                     CHUNK_SIZE, OVERLAP_SIZE, ZH_TITLE_ENHANCE)
+                     CHUNK_SIZE, OVERLAP_SIZE, ZH_TITLE_ENHANCE,CSS_UPLOAD_TEMPLATE)
 from server.utils import list_embed_models, list_online_embed_models
 import os
 import time
@@ -53,6 +53,7 @@ def file_exists(kb: str, selected_rows: List) -> Tuple[str, str]:
 
 
 def knowledge_base_page(api: ApiRequest, is_lite: bool = None):
+    st.markdown(CSS_UPLOAD_TEMPLATE, unsafe_allow_html=True)
     try:
         kb_list = {x["kb_name"]: x for x in get_kb_details()}
     except Exception as e:
@@ -144,9 +145,11 @@ def knowledge_base_page(api: ApiRequest, is_lite: bool = None):
         kb = selected_kb
         st.session_state["selected_kb_info"] = kb_list[kb]['kb_info']
         # 上传文件
+        file_format2 = ",".join([i for ls in LOADER_DICT.values() for i in ls])
         files = st.file_uploader("上传知识文件：",
-                                 [i for ls in LOADER_DICT.values() for i in ls],
+
                                  accept_multiple_files=True,
+                                 help="格式：{}".format(file_format2)
                                  )
         kb_info = st.text_area("请输入知识库介绍:", value=st.session_state["selected_kb_info"], max_chars=None,
                                key=None,

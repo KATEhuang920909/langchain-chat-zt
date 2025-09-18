@@ -52,6 +52,7 @@ class PKGFileLoader:
 
             info += f"📁 文件已解压到: {self.extract_path}"
             folders, files_path, files = self.get_relative_paths(self.extract_path)
+
             return info, [folders, files_path, files]
 
         except Exception as e:
@@ -85,7 +86,8 @@ if __name__ == '__main__':
     # 示例调用
     path = "D:/work/中台/中台安全运营工具/test/中台检查文档需求清单@充电桩场景精细化选址能力v1.zip"
     # path = "D:/work/中台/中台安全运营工具/test/中台检查文档需求清单@充电桩场景精细化选址能力v1"
-    loader = PKGFileLoader(path)
-    info, files_path = loader.load()
-    print(info)
+    loader = PKGFileLoader(path,"D:/work/中台/中台安全运营工具/test/中台检查文档需求清单@充电桩场景精细化选址能力v1")
+    folders, files_path, files = loader.get_relative_paths("D:/work/中台/中台安全运营工具/test/中台检查文档需求清单@充电桩场景精细化选址能力v1")
+    print("folders",folders)
     print("files_path", files_path)
+    print("folders", files)
